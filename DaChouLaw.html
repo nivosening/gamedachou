@@ -1,0 +1,1641 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<title>大周制度總覽</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500;600;700;900&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1410;
+    --paper: #e8dcc4;
+    --paper-deep: #d4c4a3;
+    --paper-shadow: #b8a583;
+    --vermilion: #8b2a1f;
+    --vermilion-soft: #a8453a;
+    --gold: #8a6e3f;
+    --gold-dim: #6b5530;
+    --rule: #6b5530;
+    --muted: #4a3826;
+    --accent: #5c4128;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: "Noto Serif TC", serif;
+    background: var(--paper);
+    background-image:
+      radial-gradient(circle at 20% 30%, rgba(139, 42, 31, 0.04) 0%, transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba(106, 85, 48, 0.06) 0%, transparent 50%),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.85' numOctaves='3'/%3E%3CfeColorMatrix values='0 0 0 0 0.1 0 0 0 0 0.08 0 0 0 0 0.05 0 0 0 0.08 0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+    color: var(--ink);
+    line-height: 1.85;
+    min-height: 100vh;
+  }
+
+  /* === 頁頭 === */
+  .header {
+    border-bottom: 3px double var(--rule);
+    padding: 3rem 2rem 2rem;
+    text-align: center;
+    background: linear-gradient(180deg, var(--paper-deep) 0%, var(--paper) 100%);
+    position: relative;
+  }
+
+  .header::before, .header::after {
+    content: "❖";
+    color: var(--vermilion);
+    font-size: 1.4rem;
+    position: absolute;
+    top: 2rem;
+  }
+  .header::before { left: 2rem; }
+  .header::after { right: 2rem; }
+
+  .header h1 {
+    font-family: "ZCOOL XiaoWei", "Noto Serif TC", serif;
+    font-size: clamp(2.2rem, 5vw, 3.6rem);
+    color: var(--ink);
+    letter-spacing: 0.4em;
+    margin-bottom: 0.6rem;
+    font-weight: 400;
+  }
+
+  .header .sub {
+    font-size: 0.95rem;
+    color: var(--muted);
+    letter-spacing: 0.3em;
+    font-style: italic;
+  }
+
+  .header .seal {
+    display: inline-block;
+    margin-top: 1.5rem;
+    padding: 0.4rem 1rem;
+    border: 2px solid var(--vermilion);
+    color: var(--vermilion);
+    font-size: 0.85rem;
+    letter-spacing: 0.5em;
+    background: rgba(139, 42, 31, 0.04);
+  }
+
+  /* === 主版面：左目錄 + 右內文 === */
+  .container {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    max-width: 1400px;
+    margin: 0 auto;
+    gap: 0;
+  }
+
+  /* === 側邊目錄 === */
+  .toc {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    padding: 2.5rem 1.5rem 2rem 2rem;
+    border-right: 1px solid var(--rule);
+    background: var(--paper-deep);
+    background-image: linear-gradient(90deg, rgba(0,0,0,0.03) 0%, transparent 100%);
+  }
+
+  .toc-title {
+    font-size: 0.75rem;
+    letter-spacing: 0.5em;
+    color: var(--vermilion);
+    margin-bottom: 1.2rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .toc ol {
+    list-style: none;
+    counter-reset: chapter;
+  }
+
+  .toc li {
+    counter-increment: chapter;
+    margin-bottom: 0.35rem;
+  }
+
+  .toc a {
+    display: block;
+    padding: 0.4rem 0.6rem 0.4rem 2.4rem;
+    color: var(--ink);
+    text-decoration: none;
+    font-size: 0.92rem;
+    letter-spacing: 0.05em;
+    position: relative;
+    border-left: 2px solid transparent;
+    transition: all 0.25s ease;
+  }
+
+  .toc a::before {
+    content: counter(chapter, cjk-ideographic) "、";
+    position: absolute;
+    left: 0.4rem;
+    color: var(--gold-dim);
+    font-size: 0.8rem;
+  }
+
+  .toc a:hover {
+    background: rgba(139, 42, 31, 0.08);
+    color: var(--vermilion);
+    border-left-color: var(--vermilion);
+    padding-left: 2.6rem;
+  }
+
+  .toc-footer {
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rule);
+    font-size: 0.75rem;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  /* === 內文 === */
+  .content {
+    padding: 3rem 3rem 6rem;
+    max-width: 880px;
+  }
+
+  /* === 章節 === */
+  .chapter {
+    margin-bottom: 4rem;
+    scroll-margin-top: 2rem;
+  }
+
+  .chapter-header {
+    cursor: pointer;
+    padding: 1.4rem 0 1.2rem;
+    border-top: 2px solid var(--ink);
+    border-bottom: 1px solid var(--rule);
+    display: flex;
+    align-items: baseline;
+    gap: 1.2rem;
+    user-select: none;
+    transition: background 0.2s;
+  }
+
+  .chapter-header:hover {
+    background: rgba(139, 42, 31, 0.03);
+  }
+
+  .chapter-num {
+    font-family: "ZCOOL XiaoWei", serif;
+    font-size: 1.1rem;
+    color: var(--vermilion);
+    letter-spacing: 0.2em;
+    min-width: 4em;
+  }
+
+  .chapter-title {
+    font-family: "ZCOOL XiaoWei", "Noto Serif TC", serif;
+    font-size: 1.6rem;
+    color: var(--ink);
+    letter-spacing: 0.15em;
+    font-weight: 500;
+    flex: 1;
+  }
+
+  .chapter-toggle {
+    color: var(--gold);
+    font-size: 1.1rem;
+    transition: transform 0.3s;
+  }
+
+  .chapter.collapsed .chapter-toggle {
+    transform: rotate(-90deg);
+  }
+
+  .chapter-body {
+    padding-top: 1.5rem;
+    overflow: hidden;
+    transition: max-height 0.4s ease, opacity 0.3s ease;
+  }
+
+  .chapter.collapsed .chapter-body {
+    max-height: 0;
+    opacity: 0;
+    padding-top: 0;
+  }
+
+  /* === 區塊 === */
+  .section {
+    margin-bottom: 2rem;
+  }
+
+  .section-label {
+    display: inline-block;
+    padding: 0.2rem 0.7rem;
+    background: var(--vermilion);
+    color: var(--paper);
+    font-size: 0.78rem;
+    letter-spacing: 0.3em;
+    margin-bottom: 0.8rem;
+  }
+
+  .section-label.gold {
+    background: var(--gold);
+  }
+
+  .section-label.ink {
+    background: var(--ink);
+  }
+
+  .section h3 {
+    font-family: "ZCOOL XiaoWei", serif;
+    font-size: 1.15rem;
+    color: var(--ink);
+    margin: 1.4rem 0 0.8rem;
+    letter-spacing: 0.15em;
+    border-left: 4px solid var(--vermilion);
+    padding-left: 0.8rem;
+  }
+
+  .section h4 {
+    font-size: 1rem;
+    color: var(--accent);
+    margin: 1rem 0 0.5rem;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+  }
+
+  .section p {
+    margin-bottom: 0.8rem;
+    color: var(--ink);
+    text-align: justify;
+  }
+
+  .section p.lead {
+    font-style: italic;
+    color: var(--muted);
+    border-left: 2px solid var(--gold);
+    padding-left: 1rem;
+    margin: 1rem 0 1.2rem;
+  }
+
+  /* === 條文引用 === */
+  .quote {
+    background: rgba(106, 85, 48, 0.06);
+    border-left: 3px solid var(--gold);
+    padding: 1rem 1.2rem;
+    margin: 1rem 0;
+    font-style: italic;
+    color: var(--muted);
+    font-size: 0.95rem;
+    line-height: 2;
+  }
+
+  /* === 表格 === */
+  .table-wrap {
+    margin: 1.2rem 0;
+    overflow-x: auto;
+    border: 1px solid var(--rule);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+    background: rgba(255, 252, 240, 0.5);
+  }
+
+  th {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 0.7rem 0.8rem;
+    text-align: left;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    font-size: 0.85rem;
+    border-right: 1px solid var(--rule);
+  }
+
+  th:last-child { border-right: none; }
+
+  td {
+    padding: 0.6rem 0.8rem;
+    border-top: 1px solid var(--paper-shadow);
+    border-right: 1px solid rgba(184, 165, 131, 0.4);
+    vertical-align: top;
+  }
+
+  td:last-child { border-right: none; }
+
+  tbody tr:nth-child(even) td {
+    background: rgba(212, 196, 163, 0.2);
+  }
+
+  tbody tr:hover td {
+    background: rgba(139, 42, 31, 0.05);
+  }
+
+  td strong {
+    color: var(--vermilion);
+  }
+
+  /* === 列表 === */
+  .section ul {
+    list-style: none;
+    margin: 0.8rem 0 1rem;
+    padding-left: 0;
+  }
+
+  .section ul li {
+    padding: 0.3rem 0 0.3rem 1.5rem;
+    position: relative;
+  }
+
+  .section ul li::before {
+    content: "◇";
+    position: absolute;
+    left: 0;
+    color: var(--vermilion);
+    font-size: 0.8rem;
+  }
+
+  /* === 重點框 === */
+  .principle {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 1.5rem 1.8rem;
+    margin: 1.5rem 0;
+    position: relative;
+  }
+
+  .principle::before {
+    content: "綱";
+    position: absolute;
+    top: -0.5rem;
+    left: 1.2rem;
+    background: var(--vermilion);
+    color: var(--paper);
+    padding: 0.15rem 0.7rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.3em;
+  }
+
+  .principle p {
+    color: var(--paper);
+    margin-bottom: 0.5rem;
+  }
+
+  .principle p:last-child { margin-bottom: 0; }
+
+  .principle strong { color: #f0c97d; }
+
+  /* === 雙欄 === */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin: 1rem 0;
+  }
+
+  .two-col > div {
+    border: 1px solid var(--rule);
+    padding: 1rem 1.2rem;
+    background: rgba(255, 252, 240, 0.4);
+  }
+
+  .two-col h5 {
+    color: var(--vermilion);
+    margin-bottom: 0.6rem;
+    font-size: 0.95rem;
+    letter-spacing: 0.15em;
+    border-bottom: 1px solid var(--gold);
+    padding-bottom: 0.3rem;
+  }
+
+  /* === 標籤 === */
+  .tag {
+    display: inline-block;
+    padding: 0.15rem 0.55rem;
+    background: rgba(139, 42, 31, 0.1);
+    color: var(--vermilion);
+    border: 1px solid var(--vermilion);
+    font-size: 0.78rem;
+    margin: 0.2rem 0.3rem 0.2rem 0;
+    letter-spacing: 0.05em;
+  }
+
+  .tag.gold {
+    background: rgba(138, 110, 63, 0.1);
+    color: var(--gold-dim);
+    border-color: var(--gold);
+  }
+
+  .tag.ink {
+    background: rgba(26, 20, 16, 0.08);
+    color: var(--ink);
+    border-color: var(--ink);
+  }
+
+  /* === 回頂 === */
+  .top-btn {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 50px;
+    height: 50px;
+    background: var(--ink);
+    color: var(--paper);
+    border: 2px solid var(--vermilion);
+    border-radius: 0;
+    cursor: pointer;
+    font-size: 1.2rem;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.3s;
+    z-index: 100;
+    font-family: inherit;
+  }
+
+  .top-btn.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .top-btn:hover {
+    background: var(--vermilion);
+    color: var(--paper);
+  }
+
+  /* === 全部展開／收合 === */
+  .controls {
+    position: sticky;
+    top: 0;
+    background: var(--paper);
+    padding: 0.8rem 0;
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: 1rem;
+    display: flex;
+    gap: 0.6rem;
+    z-index: 10;
+  }
+
+  .ctrl-btn {
+    background: transparent;
+    border: 1px solid var(--ink);
+    color: var(--ink);
+    padding: 0.35rem 0.9rem;
+    font-family: inherit;
+    font-size: 0.82rem;
+    letter-spacing: 0.2em;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .ctrl-btn:hover {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  /* === 搜尋 === */
+  .search-box {
+    margin-bottom: 1rem;
+    position: relative;
+  }
+
+  .search-box input {
+    width: 100%;
+    padding: 0.5rem 0.8rem 0.5rem 2rem;
+    border: 1px solid var(--rule);
+    background: rgba(255, 252, 240, 0.6);
+    font-family: inherit;
+    font-size: 0.9rem;
+    color: var(--ink);
+    letter-spacing: 0.05em;
+  }
+
+  .search-box input:focus {
+    outline: none;
+    border-color: var(--vermilion);
+    background: rgba(255, 252, 240, 0.9);
+  }
+
+  .search-box::before {
+    content: "尋";
+    position: absolute;
+    left: 0.6rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gold-dim);
+    font-size: 0.85rem;
+  }
+
+  /* === 響應式 === */
+  @media (max-width: 980px) {
+    .container { grid-template-columns: 1fr; }
+    .toc {
+      position: relative;
+      height: auto;
+      border-right: none;
+      border-bottom: 1px solid var(--rule);
+    }
+    .content { padding: 2rem 1.5rem 4rem; }
+    .two-col { grid-template-columns: 1fr; }
+    .header h1 { letter-spacing: 0.25em; }
+    .header::before, .header::after { display: none; }
+  }
+
+  /* === 列印 === */
+  @media print {
+    .toc, .controls, .top-btn { display: none; }
+    .container { grid-template-columns: 1fr; }
+    .chapter.collapsed .chapter-body { max-height: none; opacity: 1; }
+    body { background: white; color: black; }
+  }
+
+  /* === 隱藏結果 === */
+  .hidden { display: none !important; }
+
+  .footnote {
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-top: 0.8rem;
+    padding-top: 0.6rem;
+    border-top: 1px dashed var(--rule);
+    font-style: italic;
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <h1>大周制度總覽</h1>
+  <div class="sub">DAZHOU · INSTITUTIONAL HANDBOOK</div>
+  <div class="seal">慕容後宅 ‧ 設定速查</div>
+</header>
+
+<div class="container">
+
+  <!-- 目錄 -->
+  <nav class="toc">
+    <div class="toc-title">目錄</div>
+
+    <div class="search-box">
+      <input type="text" id="search" placeholder="搜尋章節、人物、機構…">
+    </div>
+
+    <ol>
+      <li><a href="#ch01">朝官制度</a></li>
+      <li><a href="#ch02">女官與女子參政</a></li>
+      <li><a href="#ch03">武將制度</a></li>
+      <li><a href="#ch04">皇族等級</a></li>
+      <li><a href="#ch05">后妃制度</a></li>
+      <li><a href="#ch06">宗法繼承</a></li>
+      <li><a href="#ch07">王府侯府內宅名分</a></li>
+      <li><a href="#ch08">婚配議親流程</a></li>
+      <li><a href="#ch09">學校教育制度</a></li>
+      <li><a href="#ch10">歌妓伶人樂戶</a></li>
+      <li><a href="#ch11">商戶往來</a></li>
+      <li><a href="#ch12">住所等級</a></li>
+      <li><a href="#ch13">地理與外交</a></li>
+      <li><a href="#ch14">服制與儀仗</a></li>
+      <li><a href="#ch15">節令與時間</a></li>
+      <li><a href="#ch16">度量衡與貨幣</a></li>
+      <li><a href="#ch17">律法與刑罰</a></li>
+      <li><a href="#ch18">醫療與藥事</a></li>
+    </ol>
+
+    <div class="toc-footer">
+      共十八制度·一覽明察<br>
+      點章節展開／收合<br>
+      支援錨點直跳
+    </div>
+  </nav>
+
+  <!-- 內文 -->
+  <main class="content">
+
+    <div class="controls">
+      <button class="ctrl-btn" id="expand-all">全展</button>
+      <button class="ctrl-btn" id="collapse-all">全收</button>
+    </div>
+
+    <!-- === 一、朝官制度 === -->
+    <section class="chapter" id="ch01">
+      <div class="chapter-header" onclick="toggle(this)">
+        <div class="chapter-num">第一篇</div>
+        <div class="chapter-title">朝官制度</div>
+        <div class="chapter-toggle">▾</div>
+      </div>
+      <div class="chapter-body">
+
+        <div class="principle">
+          <p><strong>皇帝</strong> → 中樞宰輔 → 六部 → 三法司 → 翰林院／國子監 → 武官系統 → 地方總督巡撫 → 內廷機構</p>
+          <p>朝政以「內閣首輔＋六部尚書＋宗人府＋都察院＋大理寺＋軍機處＋內務府」為運作核心。</p>
+        </div>
+
+        <div class="section">
+          <span class="section-label">品級總則</span>
+          <p class="lead">大周官制行九品十八級，每品分正、從。小說常用正一品至正五品。</p>
+
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>等級</th><th>地位</th><th>代表官職</th></tr></thead>
+              <tbody>
+                <tr><td>正一品</td><td>朝廷最高重臣</td><td>太師、太傅、太保、大學士、領侍衛內大臣</td></tr>
+                <tr><td>從一品</td><td>次於一品</td><td>少師、少傅、少保、協辦大學士、總督</td></tr>
+                <tr><td>正二品</td><td>朝廷實權大臣</td><td>六部尚書、都察院左都御史</td></tr>
+                <tr><td>從二品</td><td>高級副職、封疆</td><td>六部侍郎、巡撫、布政使</td></tr>
+                <tr><td>正三品</td><td>中高級官員</td><td>通政使、大理寺卿、按察使</td></tr>
+                <tr><td>正五品</td><td>中層官員</td><td>郎中、給事中、御史</td></tr>
+                <tr><td>正七品</td><td>縣級主官</td><td>知縣、翰林院編修</td></tr>
+                <tr><td>未入流</td><td>雜職</td><td>書吏、差役</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="section">
+          <span class="section-label gold">中樞</span>
+          <h3>中樞宰輔</h3>
+          <ul>
+            <li><strong>三公</strong>：太師、太傅、太保（正一品，多為榮銜或元老重臣）</li>
+            <li><strong>內閣首輔／次輔</strong>：殿閣大學士（正一品至從一品），替皇帝票擬、議政</li>
+            <li><strong>軍機處</strong>：軍機大臣、領班軍機大臣、軍機章京，掌軍國機密、密旨</li>
+          </ul>
+          <p class="footnote">寧王曾入軍機行走、節制北營，後因王府風波被收回軍務。</p>
+        </div>
+
+        <div class="section">
+          <span class="section-label">六部</span>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>部</th><th>掌</th><th>劇情用</th></tr></thead>
+              <tbody>
+                <tr><td><strong>吏部</strong></td><td>官員任免、考核、誥命</td><td>外戚安插親信、世家爭官缺</td></tr>
+                <tr><td><strong>戶部</strong></td><td>財政、稅賦、戶籍、漕運</td><td>國庫空虛、賑災銀、鹽商勾結</td></tr>
+                <tr><td><strong>禮部</strong></td><td>禮制、祭祀、冊封、科舉、外交</td><td>皇子選妃、宗室婚配、和親</td></tr>
+                <tr><td><strong>兵部</strong></td><td>軍政、武官任免、軍械、調兵</td><td>寧王軍權、邊境戰事</td></tr>
+                <tr><td><strong>刑部</strong></td><td>刑獄、審判、律法</td><td>呂嬪案、宗室犯法、貪污</td></tr>
+                <tr><td><strong>工部</strong></td><td>工程、營造、水利、宮殿</td><td>宮殿失火、皇陵、河堤</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h4>六部官職等級</h4>
+          <p>尚書（正二品）→ 左右侍郎（從二品）→ 郎中（正五品）→ 員外郎（從五品）→ 主事（正六品）</p>
+        </div>
+
+        <div class="section">
+          <span class="section-label">三法司</span>
+          <h3>監察與司法</h3>
+          <div class="two-col">
+            <div>
+              <h5>都察院</h5>
+              <p>左都御史（正二品）統領。御史品級雖低，但可彈劾百官，是朝堂鬥爭利器。</p>
+            </div>
+            <div>
+              <h5>大理寺</h5>
+              <p>大理寺卿（正三品）。掌重大案件覆審，三法司會審必有。</p>
+            </div>
+          </div>
+          <p class="footnote">凡死罪、宗室重案、官員巨案，由刑部、大理寺、都察院三法司會審。</p>
+        </div>
+
+        <div class="section">
+          <span class="section-label gold">清貴</span>
+          <h3>翰林院與國子監</h3>
+          <p>翰林院掌詔書、修史、講學，狀元授修撰、進士授編修。國子監為最高官學，培養文官。</p>
+        </div>
+
+        <div class="section">
+          <span class="section-label">內廷</span>
+          <h3>內廷機構</h3>
+          <p>內務府（宮廷財物採買）、敬事房（侍寢紀錄）、慎刑司（宮人案件）、御膳房、御藥房、太醫院、造辦處、尚宮局、掖庭局。</p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- === 二、女官與女子參政 === -->
+    <section class="chapter" id="ch02">
+      <div class="chapter-header" onclick="toggle(this)">
+        <div class="chapter-num">第二篇</div>
+        <div class="chapter-title">女官與女子參政</div>
+        <div class="chapter-toggle">▾</div>
+      </div>
+      <div class="chapter-body">
+
+        <div class="principle">
+          <p>大周女子可入仕。女官不等於宮女，也不等於后妃侍從。女子得經科舉、薦舉、恩蔭、女學選拔、皇后特詔等方式入朝任官。</p>
+          <p>女官系統獨立於六尚之外，形成<strong>女史臺—司議院—女察院—女學士院—宗室女官司</strong>五大機構。</p>
+        </div>
+
+        <div class="section">
+          <span class="section-label">五大機構</span>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>機構</th><th>對應</th><th>職責</th></tr></thead>
+              <tbody>
+                <tr><td><strong>女史臺</strong></td><td>女官中樞</td><td>女官選任、宮廷記注、皇后政令、宗室女眷檔案</td></tr>
+                <tr><td><strong>司議院</strong></td><td>女臣議政</td><td>議政、諫言、修法、女眷政令</td></tr>
+                <tr><td><strong>女察院</strong></td><td>女官監察（≈都察院）</td><td>監察女官、命婦、宗室女眷、宮廷案件</td></tr>
+                <tr><td><strong>女學士院</strong></td><td>女翰林</td><td>草詔、修史、講學、女學考選</td></tr>
+                <tr><td><strong>宗室女官司</strong></td><td>宗人府下屬</td><td>宗室女眷婚配、入嗣、封號、玉牒旁錄</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="section">
+          <span class="section-label gold">女史臺官職</span>
+          <p>女史令（正三品）→ 左右女史丞（從三品）→ 司籍／司制／司記／司禮女史（正五品）→ 典籍／記注女史（正七品）→ 掌案女史（正八品）</p>
+        </div>
+
+        <div class="section">
+          <span class="section-label gold">入仕途徑</span>
+          <ul>
+            <li><strong>女科</strong>：女童試 → 女院試 → 女鄉試 → 女會試 → 女殿試</li>
+            <li><strong>女學選拔</strong>：宮中女學、國子監女學、宗室女學</li>
+            <li><strong>薦舉</strong>：大臣、皇后、太后、地方官</li>
+            <li><strong>恩蔭</strong>：功臣、官員之女</li>
+            <li><strong>皇后特詔</strong>：因改革需要任命</li>
+            <li><strong>宮女升任</strong>：尚宮系統轉政務</li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <span class="section-label">與后妃並立的原則</span>
+          <div class="quote">
+            后妃不得兼任女官，但可「領宮務」。<br>
+            女官不得因侍奉皇帝自動成為后妃，需經正式冊封。<br>
+            女官若被皇帝納入後宮，原官職須解除或轉為榮銜。
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- === 三、武將制度 === -->
+    <section class="chapter" id="ch03">
+      <div class="chapter-header" onclick="toggle(this)">
+        <div class="chapter-num">第三篇</div>
+        <div class="chapter-title">武將制度</div>
+        <div class="chapter-toggle">▾</div>
+      </div>
+      <div class="chapter-body">
+
+        <div class="principle">
+          <p><strong>兵部管制度，軍機處管密令，武將管軍隊。</strong></p>
+          <p>兵權分層：京中禁軍、邊軍、地方駐軍、王府護衛不得由同一人掌握。宗室掌兵須受嚴格節制。</p>
+        </div>
+
+        <div class="section">
+          <span class="section-label">武將品級</span>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>等級</th><th>官職</th><th>作用</th></tr></thead>
+              <tbody>
+                <tr><td>正一品</td><td>大將軍、上柱國</td><td>國家級統帥</td></tr>
+                <tr><td>從一品</td><td>都督、提督、鎮北將軍</td><td>掌一方軍務</td></tr>
+                <tr><td>正二品</td><td>總兵、禁軍統領</td><td>鎮守一鎮</td></tr>
+                <tr><td>從二品</td><td>副將</td><td>副統帥</td></tr>
+                <tr><td>正三品</td><td>參將</td><td>分守一路</td></tr>
+                <tr><td>從三品</td><td>游擊將軍</td><td>機動作戰</td></tr>
+                <tr><td>正四品</td><td>都司</td><td>掌營衛</td></tr>
+                <tr><td>正五品</td><td>守備</td><td>守城、守關</td></tr>
+                <tr><td>正六品</td><td>千總</td><td>管數百兵</td></tr>
+                <tr><td>正七品</td><td>把總</td><td>基層武官</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="section">
+          <span class="section-label gold">三大軍系</span>
+          <div class="two-col">
+            <div>
+              <h5>京中禁軍</h5>
+              <p>羽林衛、金吾衛、龍武衛。領侍衛內大臣（正一品）掌皇帝近身。禁軍統領（正二品）。</p>
+            </div>
+            <div>
+              <h5>邊軍</h5>
+              <p>大周設北境、西涼、東海、南疆四大邊鎮。北境軍最關鍵——對應烏桓、左賢王舊支。</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <span class="section-label">女武官</span>
+          <p>女將軍（從二品至正三品）、女都尉（正四品）、女校尉（正六品）、女騎尉、女護衛長、女武教習、女巡檢、女營兵。</p>
+          <p class="footnote">公主和親、安靖公主案、王府內院安全皆需女護衛。阿梨即為和親女護衛。</p>
+        </div>
+
+        <div class="section">
+          <span class="section-label">調兵限制</span>
+          <div class="quote">
+            無詔調兵主將斬。私藏兵符斬。王府私養甲兵依謀逆嫌疑論。<br>
+            親王可奉旨監軍、入軍機行走，但不得私調兵馬、私留軍報、私養甲兵。
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- === 四、皇族等級 === -->
+    <section class="chapter" id="ch04">
+      <div class="chapter-header" onclick="toggle(this)">
+        <div class="chapter-num">第四篇</div>
+        <div class="chapter-title">皇族等級</div>
+        <div class="chapter-toggle">▾</div>
+      </div>
+      <div class="chapter-body">
+
+        <div class="section">
+          <span class="section-label">五大類</span>
+          <ul>
+            <li><strong>皇帝直系</strong>：皇帝、皇后、太子、皇子、公主</li>
+            <li><strong>親王系</strong>：親王、親王妃、世子、郡王、郡主</li>
+            <li><strong>郡王系</strong>：郡王、郡王妃、王府子女</li>
+            <li><strong>遠支宗室</strong>：國公、將軍、宗室旁支</li>
+            <li><strong>宗室女眷</strong>：公主、長公主、大長公主、郡主、縣主、宗姬</li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <span class="section-label gold">皇族對照表</span>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>等級</th><th>男性</th><th>女性</th><th>配偶</th></tr></thead>
+              <tbody>
+                <tr><td>核心</td><td>皇帝</td><td>皇后</td><td>皇后／后妃</td></tr>
+                <tr><td>儲君</td><td>太子</td><td>—</td><td>太子妃</td></tr>
+                <tr><td>皇帝子女</td><td>親王、皇子</td><td>公主、長公主</td><td>王妃、駙馬</td></tr>
+                <tr><td>親王子女</td><td>世子、郡王</td><td>郡主、縣主</td><td>世子妃、郡馬</td></tr>
+                <tr><td>郡王子女</td><td>郡王世子、宗室公子</td><td>縣主、宗姬</td><td>—</td></tr>
+                <tr><td>遠支</td><td>國公、將軍、宗室子</td><td>郡君、縣君、宗女</td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="section">
+          <span class="section-label">現存人物對照</span>
+          <p><span class="tag ink">皇帝</span> 周顯光 · 約46<br>
+          <span class="tag ink">皇太后</span> 長孫順德 · 約65-70<br>
+          <span class="tag">皇后</span> 姚嘉晨 · 太子、寧王、閔如公主之母<br>
+          <span class="tag">太子</span> 周元宇 · 約25 · 太子妃謝令儀<br>
+          <span class="tag">寧王</span> 周元書 · 約24 · 曾掌軍權<br>
+          <span class="tag">趙王</span> 周元清 · 約22 · 許貴妃之子<br>
+          <span class="tag">韓王</span> 周元予 · 約17 · 公孫貴嬪之子<br>
+          <span class="tag">魏王</span> 約10-14 · 秦妃之子<br>
+          <span class="tag gold">長公主</span> 端如（安北長公主）· 已北嫁烏桓<br>
+          <span class="tag gold">公主</span> 閔如 · 皇后之女<br>
+          <span class="tag gold">舊案</span> 安靖公主 · 死因有冤</p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- === 五、后妃制度 === -->
+    <section class="chapter" id="ch05">
+      <div class="chapter-header" onclick="toggle(this)">
+        <div class="chapter-num">第五篇</div>
+        <div class="chapter-title">后妃制度</div>
+        <div class="chapter-toggle">▾</div>
+      </div>
+      <div class="chapter-body">
+
+        <div class="section">
+          <span class="section-label">位階</span>
+          <p>皇后 → 皇貴妃 → 貴妃 → 妃 → 嬪 → 貴人 → 才人／美人 → 常在 → 答應 → 官女子／御侍</p>
+          <p class="footnote">大周保留「貴嬪」介於妃位以下、嬪位以上。公孫貴嬪即用此位。</p>
+        </div>
+
+        <div class="section">
+          <span class="section-label gold">位階詳表</span>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>位階</th><th>人數</th><th>身份</th></tr></thead>
+              <tbody>
+                <tr><td>皇后</td><td>1</td><td>中宮正位，母儀天下</td></tr>
+                <tr><td>皇貴妃</td><td>1，可空缺</td><td>副后級</td></tr>
+                <tr><td>貴妃</td><td>2</td><td>高階妃嬪</td></tr>
+                <tr><td>妃</td><td>4</td><td>一宮主位，可撫育皇子女</td></tr>
+                <tr><td>貴嬪／嬪</td><td>4-6</td><td>中位嬪御</td></tr>
+                <tr><td>貴人</td><td>不定</td><td>有封號、有固定份例</td></tr>
+                <tr><td>常在／答應</td><td>不定</td><td>低階后妃</td></tr>
+                <tr><td>官女子</td><td>不定</td><td>準后妃，候召</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="section">
+          <span class="section-label">皇后權力（姚嘉晨）</span>
+          <ul>
+            <li><strong>宮權</strong>：管后妃、宮女、女官、宮務</li>
+            <li><strong>禮權</strong>：主持冊封、朝賀、命婦入宮、婚配禮制</li>
+            <li><strong>教權</strong>：節制皇家書院女子課程、女史院</li>
+            <li><strong>議政權</strong>：可召女史臺、司議院整理女眷政務</li>
+            <li><strong>監察權</strong>：可請女察院、慎刑司查後宮與命婦案件</li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <span class="section-label">現存后妃</span>
+          <p><span class="tag">皇后</span>姚嘉晨 · <span class="tag">貴妃</span>許貴妃（趙王之母）· <span class="tag">貴嬪</span>公孫貴嬪（韓王之母）· <span class="tag">妃</span>秦妃（魏王之母，已生龍鳳胎）· <span class="tag">妃</span>蓉妃（周元祥、周元夢之母）· <span class="tag gold">妃</span>古倫公主／昭妃（烏桓新汗之妹）· <span class="tag">嬪</span>呂嬪（懷孕涉血脈疑案）· <span class="tag ink">答應</span>周答應（皇子已夭折）</p>
+        </div>
+
+        <div class="section">
+          <span class="section-label">后妃罪名</span>
+          <p>僭越服制 / 私通 / 詐孕 / 謀害皇嗣 / 巫蠱用香 / 干預朝政 / 母家貪污 / 結黨營私</p>
+          <p>處罰由輕至重：申飭 → 罰俸 → 禁足 → 遷宮 → 奪宮權 → 降位 → 奪封號 → 廢為庶人 → 賜死</p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- === 六、宗法繼承 === -->
+    <section class="chapter" id="ch06">
+      <div class="chapter-header" onclick="toggle(this)">
+        <div class="chapter-num">第六篇</div>
+        <div class="chapter-title">宗法繼承</div>
+        <div class="chapter-toggle">▾</div>
+      </div>
+      <div class="chapter-body">
+
+        <div class="principle">
+          <p><strong>有嫡立嫡，無嫡立長，長幼之外再論賢能。</strong></p>
+          <p>嫡長子不肖者，可以廢立，但須有重大罪名。庶長子雖長，不得越嫡子；除非嫡子早亡、無能、重罪，或皇帝特旨。</p>
+        </div>
+
+        <div class="section">
+          <span class="section-label">子女嫡庶</span>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>生母</th><th>身份</th><th>地位</th></tr></thead>
+              <tbody>
+                <tr><td>正妻／王妃</td><td>嫡子、嫡女</td><td>最高</td></tr>
+                <tr><td>平妻</td><td>次嫡／平出</td><td>高於庶出，低於正妻嫡出</td></tr>
+                <tr><td>側妃</td><td>側出</td><td>高於普通庶出</td></tr>
+                <tr><td>貴妾</td><td>高等庶出</td><td>高於一般庶</td></tr>
+                <tr><td>妾室</td><td>庶出</td><td>一般庶出</td></tr>
+                <tr><td>侍妾／通房</td><td>低等庶出</td><td>需認祖</td></tr>
+                <tr><td>外室</td><td>認祖後庶出</td><td>爭議大</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="section">
+          <span class="section-label gold">爵位繼承順位</span>
+          <p>1. 正妻嫡長子 → 2. 嫡長孫（已故嫡長子之子）→ 3. 其他嫡子 → 4. 側出長子或庶長子 → 5. 同宗近支嗣子 → 6. 嫡女承爵（須皇帝特旨）→ 7. 皇帝特旨</p>
+        </div>
+
+        <div class="section">
+          <span class="section-label">入嗣</span>
+          <div class="quote">
+            <strong>入嗣不改本源</strong>。族譜、玉牒須旁註本生父母。<br>
+            為婚配臨時改籍、移記、入嗣者，視為可疑。<br>
+            借入嗣規避親緣禁忌、壓低宗室女身分者，宗人府、宗室女官司得重審其案。
+          </div>
+          <p class="footnote">直接對應周宜妍案。</p>
+        </div>
+
+        <div class="section">
+          <span class="section-label">女子承權</span>
+          <p>大周女子可承嫁妝、私產、母族產業。無合適男嗣時，嫡女或有官職功勳之女得承產、攝爵、承家；承爵須皇帝特旨。可行招贅或立女戶。</p>
+        </div>
+
+        <div class="section">
+          <span class="section-label">寧王府子嗣</span>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>子嗣</th><th>生母</th><th>名分</th></tr></thead>
+              <tbody>
+                <tr><td>周承曜</td><td>顧明婉（王妃）</td><td>嫡子，世子第一順位</td></tr>
+                <tr><td>周昭寧</td><td>顧明婉（王妃）</td><td>嫡女，可封郡主</td></tr>
+                <tr><td>周承晏</td><td>蘇冰（侍妾）</td><td>庶長子，皇帝賜名提高合法性</td></tr>
+                <tr><td>周承煦</td><td>春桃（外居）</td><td>外居內眷之子，入冊後為庶</td></tr>
+                <tr><td>周昭棠</td><td>春桃（外居）</td><td>外居內眷之女</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- === 七、王府侯府內宅 === -->
+    <section class="chapter" id="ch07">
+      <div class="chapter-header" onclick="toggle(this)">
+        <div class="chapter-num">第七篇</div>
+        <div class="chapter-title">王府侯府內宅名分</div>
+        <div class="chapter-toggle">▾</div>
+      </div>
+      <div class="chapter-body">
+
+        <div class="principle">
+          <p><strong>王府重「封冊」，侯府重「婚書與族冊」。</strong></p>
+          <p>王府用：王妃 → 側妃 → 庶妃 → 侍妾 → 通房／外室<br>
+          侯府用：正妻 → 平妻 → 貴妾／側夫人 → 妾室 → 侍妾 → 通房／外室</p>
+        </div>
+
+        <div class="section">
+          <span class="section-label">名分對照</span>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>類型</th><th>王府</th><th>侯府／世家</th><th>子女</th></tr></thead>
+              <tbody>
+                <tr><td>正妻</td><td>王妃</td><td>正妻、侯夫人</td><td>嫡出</td></tr>
+                <tr><td>次等妻</td><td>—（一般不設）</td><td>平妻</td><td>次嫡／平出</td></tr>
+                <tr><td>高等側室</td><td>側妃</td><td>貴妾／側夫人</td><td>側出／高等庶出</td></tr>
+                <tr><td>低等側室</td><td>庶妃</td><td>妾室</td><td>庶出</td></tr>
+                <tr><td>侍奉型</td><td>侍妾</td><td>侍妾</td><td>庶出</td></tr>
+                <tr><td>未正式</td><td>通房</td><td>通房</td><td>認祖後庶出</td></tr>
+                <tr><td>府外</td><td>外室／外居內眷</td><td>外室</td><td>認祖後庶出</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="section">
+          <span class="section-label gold">慕容侯府名分</span>
+          <p><span class="tag ink">正妻</span> 獨孤秋月 · 嫡出世華、世蘭、世菊<br>
+          <span class="tag">平妻</span> 杜若 · 掌財，世苗血脈疑案<br>
+          <span class="tag">平妻</span> 江雪雁 · 平出世蓉、世苳、世芝<br>
+          <span class="tag">平妻／特封</span> 璟和公主 · 公主身份特殊<br>
+          <span class="tag gold">妾室</span> 柳歆然（養女出身）、巧巧、孟飛、孟昭、謝媚</p>
+        </div>
+
+        <div class="section">
+          <span class="section-label">院落分配</span>
+          <p>正妻住正院，平妻住次正院或東西院，貴妾住獨立小院，妾室住偏院，侍妾住後院小房，外室不入府。</p>
+          <p class="footnote">院落位置直接反映權力。近正院＝受重視，近後門＝地位低或方便暗線。</p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- === 八、婚配議親 === -->
+    <section class="chapter" id="ch08">
+      <div class="chapter-header" onclick="toggle(this)">
+        <div class="chapter-num">第八篇</div>
+        <div class="chapter-title">婚配議親流程</div>
+        <div class="chapter-toggle">▾</div>
+      </div>
+      <div class="chapter-body">
+
+        <div class="section">
+          <span class="section-label">流程</span>
+          <p>探口風 → 問家世 → 查宗籍與名分 → 議嫡庶與婚配等級 → 合八字／擇日 → 交換庚帖 → 議聘禮與嫁妝 → 定婚書 → 過禮／納聘 → 請期 → 成婚 → 入族冊／入府冊 → 安排院落與份例 → 婚後三朝回門或入宮謝恩</p>
+        </div>
+
+        <div class="section">
+          <span class="section-label gold">皇后新規</span>
+          <div class="quote">
+            <strong>不改籍、不移記、童言婚約不得作準、入嗣不改本源。</strong><br>
+            側室名分須明定；王府子嗣隨婚案入冊；外族婚配須禮部議；女眷得向宗室女官司、女察院陳情。
+          </div>
+        </div>
+
+        <div class="section">
+          <span class="section-label">議親評估</span>
+          <h4>加分項</h4>
+          <p><span class="tag gold">+15</span>本人願意 <span class="tag gold">+10</span>門第相當 <span class="tag gold">+10</span>宗籍清楚 <span class="tag gold">+10</span>政治有利 <span class="tag gold">+20</span>皇帝促成 <span class="tag gold">+20</span>可穩定邊境</p>
+          <h4>扣分項</h4>
+          <p><span class="tag">-30</span>近親或宗籍不清 <span class="tag">-30</span>入嗣規避婚禁 <span class="tag">-25</span>女方明顯被迫 <span class="tag">-20</span>名分下壓 <span class="tag">-30</span>男方已有正妻卻以正妻名義議親</p>
+        </div>
+
+        <div class="section">
+          <span class="section-label">關鍵婚配線</span>
+          <p><strong>韓王—梁璦蘭—高晨安</strong>：梁璦蘭應給正式名分；高晨安暫入女史禮制旁修，避免強婚。</p>
+          <p><strong>魏王—宋雲岫</strong>：皇帝直接定下，年齡差兩歲不違制。</p>
+          <p><strong>周宜妍案</strong>：入嗣旁支嫡妹嫁楚王庶長子，正是皇后新規打擊的典型。</p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- === 九、學校教育 === -->
+    <section class="chapter" id="ch09">
+      <div class="chapter-header" onclick="toggle(this)">
+        <div class="chapter-num">第九篇</div>
+        <div class="chapter-title">學校教育制度</div>
+        <div class="chapter-toggle">▾</div>
+      </div>
+      <div class="chapter-body">
+
+        <div class="section">
+          <span class="section-label">六層學制</span>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>學校</th><th>學生</th><th>出路</th></tr></thead>
+              <tbody>
+                <tr><td><strong>皇家書院（崇文書院）</strong></td><td>皇子、皇女、宗室、高門、王妃候選人</td><td>宗室官、王妃、女官、外交婚配</td></tr>
+                <tr><td><strong>國子監／太學</strong></td><td>官員子弟、貢生、士子、女學生</td><td>科舉、六部、翰林、女學士院</td></tr>
+                <tr><td><strong>女史院</strong></td><td>世家女、宗室女、女官候選</td><td>女史臺、女察院、女學士院、宗室女官司</td></tr>
+                <tr><td><strong>大家族書院</strong></td><td>世家子女、旁支、姻親</td><td>家族管事、科舉、女科、婚配</td></tr>
+                <tr><td><strong>地方官學</strong></td><td>府州縣學生</td><td>科舉、地方官</td></tr>
+                <tr><td><strong>私塾／家塾</strong></td><td>平民、寒門</td><td>童試、家務、基礎識字</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="section">
+          <span class="section-label gold">皇家書院子院</span>
+          <p>崇文書院（主院）／ 明政堂（政務）／ 修禮堂（禮制宗室婚配）／ 蘭臺女院（女子分院）／ 觀政齋（旁聽朝政）／ 外藩館（外族質子、和親）</p>
+        </div>
+
+        <div class="section">
+          <span class="section-label">慕容家學</span>
+          <p>青梧書院（男學）／ 秋水女塾（女學）／ 立雪齋（禮法、女官預備）／ 衡蘭堂（帳冊財務）／ 藏鋒院（武學、護衛）</p>
+        </div>
+
+        <div class="section">
+          <span class="section-label">學制年齡</span>
+          <p>5-7 啟蒙 / 8-12 初學 / 13-15 分流 / 15-18 高階（皇家書院、國子監、女史院）/ 18-22 入仕或婚配 / 22+ 任官／掌家／教習</p>
+          <p class="footnote">高晨安 13 歲被安排「女史禮制課旁修」，正在分流期，合理。</p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- === 十、歌妓伶人樂戶 === -->
+    <section class="chapter" id="ch10">
+      <div class="chapter-header" onclick="toggle(this)">
+        <div class="chapter-num">第十篇</div>
+        <div class="chapter-title">歌妓伶人樂戶</div>
+        <div class="chapter-toggle">▾</div>
+      </div>
+      <div class="chapter-body">
+
+        <div class="principle">
+          <p><strong>歌妓不等於娼妓，伶人不等於妓子。</strong></p>
+          <p>歌妓偏歌唱詩詞陪宴；妓子偏風月交易；伶人偏戲曲表演；樂戶偏籍貫身分。</p>
+        </div>
+
+        <div class="section">
+          <span class="section-label">分類</span>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>類型</th><th>賣藝</th><th>賣身</th><th>地位</th></tr></thead>
+              <tbody>
+                <tr><td>樂官／樂工</td><td>是</td><td>否</td><td>官署技藝人</td></tr>
+                <tr><td>宮廷舞伎</td><td>是</td><td>原則否</td><td>低於女官，高於私妓</td></tr>
+                <tr><td>清倌</td><td>是</td><td>原則否</td><td>風雅圈高</td></tr>
+                <tr><td>名妓／花魁</td><td>是</td><td>不一定</td><td>風月場最高</td></tr>
+                <tr><td>妓子／娼妓</td><td>可有可無</td><td>是</td><td>低</td></tr>
+                <tr><td>伶人</td><td>是</td><td>否或不定</td><td>賤籍或藝籍</td></tr>
+                <tr><td>家伎</td><td>是</td><td>可能</td><td>依主人而定</td></tr>
+                <tr><td>樂戶</td><td>是</td><td>不一定</td><td>多為低籍</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="section">
+          <span class="section-label gold">脫籍</span>
+          <p>樂籍、賤籍女子若欲嫁入王府、侯府或脫離本業，須先贖身脫籍，官妓、罪籍者更須官府准許。未脫籍者不得為正妻。</p>
+          <p>大周特色：脫籍女子若才藝出眾、立功破案、救駕，可由皇帝、皇后或女史臺奏請特赦脫籍，入女學、教坊、皇家書院為教習。</p>
+        </div>
+
+        <div class="section">
+          <span class="section-label">情報功能</span>
+          <p>樂坊、戲班、教坊穿梭王府、侯府、宮宴、酒樓、邊鎮、外藩使團，是最適合藏秘密、傳流言、揭舊案的網絡。直接對應周答應暖夢香案的香料源頭。</p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- === 十一、商戶往來 === -->
+    <section class="chapter" id="ch11">
+      <div class="chapter-header" onclick="toggle(this)">
+        <div class="chapter-num">第十一篇</div>
+        <div class="chapter-title">商戶往來</div>
+        <div class="chapter-toggle">▾</div>
+      </div>
+      <div class="chapter-body">
+
+        <div class="section">
+          <span class="section-label">商戶等級</span>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>等級</th><th>名稱</th><th>對應</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>皇商</td><td>宮廷、內務府指定供應</td></tr>
+                <tr><td>2</td><td>官商</td><td>鹽稅、漕運、軍需</td></tr>
+                <tr><td>3</td><td>世家商號</td><td>公侯世家經營</td></tr>
+                <tr><td>4</td><td>巨賈／豪商</td><td>跨地商路、錢莊</td></tr>
+                <tr><td>5</td><td>商幫／行會</td><td>同業組織</td></tr>
+                <tr><td>6</td><td>坐賈</td><td>固定鋪面</td></tr>
+                <tr><td>7</td><td>行商</td><td>跨地販運</td></tr>
+                <tr><td>8</td><td>牙人／掮客</td><td>仲介</td></tr>
+                <tr><td>灰</td><td>私商／黑市商</td><td>走私、違禁</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="section">
+          <span class="section-label gold">高風險商業類別</span>
+          <p>鹽 / 漕運 / 軍需 / 香藥 / 錢莊 / 茶馬 / 黑市暗貨</p>
+          <p class="footnote">周答應暖夢香案可從「皇商香藥行 → 內務府 → 御藥房 → 尚藥局 → 周答應宮」整條供應鏈追查。</p>
+        </div>
+
+        <div class="section">
+          <span class="section-label">慕容家商業網</span>
+          <p><span class="tag">金庫</span>慕容柳 · <span class="tag">商業網絡跨區</span>慕容綺、慕容琦 · <span class="tag">貿易商往來</span>慕容雙 · <span class="tag ink">黑道灰色</span>慕容玖</p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- === 十二、住所等級 === -->
+    <section class="chapter" id="ch12">
+      <div class="chapter-header" onclick="toggle(this)">
+        <div class="chapter-num">第十二篇</div>
+        <div class="chapter-title">住所等級</div>
+        <div class="chapter-toggle">▾</div>
+      </div>
+      <div class="chapter-body">
+
+        <div class="section">
+          <span class="section-label">十二等級</span>
+          <p>皇宮 → 太子東宮 → 親王府 → 郡王府／長公主府 → 國公府／侯府 → 伯爵府／高官宅 → 世家大院 → 商賈大宅 → 普通官宅 → 小康民居 → 普通民居 → 貧民棚戶</p>
+        </div>
+
+        <div class="section">
+          <span class="section-label gold">僭越禁忌</span>
+          <div class="quote">
+            凡民宅、商宅、官宅不得仿宮殿規制——黃琉璃瓦、龍鳳正紋、宮門式重檐、御道、丹陛。<br>
+            若公侯王府逾制修建，工部、都察院、宗人府可查。
+          </div>
+        </div>
+
+        <div class="section">
+          <span class="section-label">進數規模</span>
+          <p>一進＝平民、小商鋪後宅 / 二進＝小康宅 / 三進＝官員宅 / 四進＝高官宅、富商宅 / 五進＝侯府、公府 / 六進以上＝王府、大型侯府 / 宮城式＝皇宮</p>
+        </div>
+
+        <div class="section">
+          <span class="section-label">入門象徵</span>
+          <ul>
+            <li><strong>正門</strong>：正妻、王妃、大禮、正統</li>
+            <li><strong>儀門</strong>：高等賓客、命婦、正式禮節</li>
+            <li><strong>側門</strong>：側妃、平妻、普通賓客</li>
+            <li><strong>角門</strong>：妾室、下人、採買</li>
+            <li><strong>後門</strong>：私下、低調、暗線</li>
+          </ul>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- === 十三、地理外交 === -->
+    <section class="chapter" id="ch13">
+      <div class="chapter-header" onclick="toggle(this)">
+        <div class="chapter-num">第十三篇</div>
+        <div class="chapter-title">地理與外交</div>
+        <div class="chapter-toggle">▾</div>
+      </div>
+      <div class="chapter-body">
+
+        <div class="section">
+          <span class="section-label">大周十道</span>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>道</th><th>中心</th><th>劇情關鍵</th></tr></thead>
+              <tbody>
+                <tr><td>京畿道</td><td>京城</td><td>後宮、朝堂、議親</td></tr>
+                <tr><td>河洛道</td><td>洛州</td><td>清流、宗法、族譜</td></tr>
+                <tr><td>江南道</td><td>金陵、蘇州</td><td>商戶、女學、嫁妝</td></tr>
+                <tr><td>淮揚道</td><td>揚州、淮安</td><td>鹽稅、風月、香案</td></tr>
+                <tr><td><strong>北境道</strong></td><td>安北、朔方</td><td>和親、邊軍、舊案</td></tr>
+                <tr><td>西涼道</td><td>涼州、玉門</td><td>外藩、香料、質子</td></tr>
+                <tr><td>東海路</td><td>明州、海州</td><td>香料、走私、海防</td></tr>
+                <tr><td>南疆道</td><td>蒼梧、南寧</td><td>毒案、女醫、叛亂</td></tr>
+                <tr><td>蜀中道</td><td>成都、劍門</td><td>流放、醫家、商路</td></tr>
+                <tr><td>嶺南道</td><td>廣州、交州</td><td>外商、香藥、南境</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="section">
+          <span class="section-label gold">外族關係</span>
+          <p><span class="tag">姻盟</span>烏桓 · 阿史那烏烈為新汗，娶安北長公主端如；其妹古倫公主入宮為昭妃<br>
+          <span class="tag ink">敵對</span>左賢王舊支 · 胡蘭、阿史那穆勒等，可作反派<br>
+          <span class="tag gold">朝貢／商貿</span>西域諸部、東海諸國、南詔、高麗、吐蕃</p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- === 十四、服制儀仗 === -->
+    <section class="chapter" id="ch14">
+      <div class="chapter-header" onclick="toggle(this)">
+        <div class="chapter-num">第十四篇</div>
+        <div class="chapter-title">服制與儀仗</div>
+        <div class="chapter-toggle">▾</div>
+      </div>
+      <div class="chapter-body">
+
+        <div class="principle">
+          <p><strong>服制是身份的外顯，儀仗是權力的外顯。</strong></p>
+          <p>穿錯衣、用錯紋、走錯門、坐錯車，都可能變成政治案件。</p>
+        </div>
+
+        <div class="section">
+          <span class="section-label">禁色禁紋</span>
+          <ul>
+            <li><strong>明黃</strong>：皇帝專用，僭用即大不敬</li>
+            <li><strong>五爪金龍</strong>：皇帝專用</li>
+            <li><strong>十二章紋</strong>：皇帝祭服、大禮服</li>
+            <li><strong>正鳳</strong>：皇后中宮專用</li>
+            <li><strong>正紅大禮服</strong>：皇后、正妻婚服主色</li>
+            <li><strong>蟒紋</strong>：親王、功臣特賜可用</li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <span class="section-label gold">后妃禮服</span>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>位分</th><th>禮服</th><th>冠飾</th></tr></thead>
+              <tbody>
+                <tr><td>皇后</td><td>褘衣、正鳳翟衣</td><td>九鳳冠／十二翟冠</td></tr>
+                <tr><td>皇貴妃</td><td>副后級翟衣</td><td>七鳳冠</td></tr>
+                <tr><td>貴妃</td><td>翟衣</td><td>五鳳冠／金翟冠</td></tr>
+                <tr><td>妃</td><td>妃位禮服</td><td>三鳳冠／翟鳥冠</td></tr>
+                <tr><td>嬪</td><td>嬪位禮服</td><td>金銀花釵</td></tr>
+                <tr><td>貴人以下</td><td>小禮服／素禮服</td><td>銀飾、絹花</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="section">
+          <span class="section-label">官員補服</span>
+          <p><strong>文</strong>：仙鶴／錦雞／孔雀／雲雁／白鷳／鷺鷥／鸂鶒／鵪鶉／練雀</p>
+          <p><strong>武</strong>：麒麟／獅／豹／虎／熊／彪／犀牛／犀牛／海馬</p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- === 十五、節令時間 === -->
+    <section class="chapter" id="ch15">
+      <div class="chapter-header" onclick="toggle(this)">
+        <div class="chapter-num">第十五篇</div>
+        <div class="chapter-title">節令與時間</div>
+        <div class="chapter-toggle">▾</div>
+      </div>
+      <div class="chapter-body">
+
+        <div class="section">
+          <span class="section-label">劇情時機速查</span>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>劇情</th><th>最佳時節</th></tr></thead>
+              <tbody>
+                <tr><td>議親相看</td><td>二月花朝、三月上巳、八月中秋</td></tr>
+                <tr><td>宗室家宴</td><td>正月、八月、冬至</td></tr>
+                <tr><td>皇后整肅命婦</td><td>正月元日、皇后千秋、冬至</td></tr>
+                <tr><td>用香毒案</td><td>五月端午、六月避暑、孕期安胎</td></tr>
+                <tr><td>女學入學</td><td>二月</td></tr>
+                <tr><td>女官考核</td><td>十一月</td></tr>
+                <tr><td>秋獵刺殺</td><td>九月</td></tr>
+                <tr><td>北境軍報</td><td>冬季、霜降後</td></tr>
+                <tr><td>年前急審</td><td>臘月封印前</td></tr>
+                <tr><td>年後翻案</td><td>正月十五後</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="section">
+          <span class="section-label gold">十二時辰</span>
+          <p><strong>卯時</strong> 5-7 宮門開、后妃梳妝 / <strong>辰時</strong> 7-9 早朝、請安 / <strong>巳時</strong> 9-11 宮務、審案 / <strong>午時</strong> 11-13 午膳、宣判 / <strong>申時</strong> 15-17 宴前準備 / <strong>酉時</strong> 17-19 宮門落鑰 / <strong>戌時</strong> 19-21 夜禁、侍寢 / <strong>子時</strong> 23-1 密會、宮變</p>
+        </div>
+
+        <div class="section">
+          <span class="section-label">紀年格式</span>
+          <p><span class="tag">官式</span>顯光二十六年三月初八，戌時三刻</p>
+          <p><span class="tag">口語</span>初八那日、十五夜裡、年前、歲末</p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- === 十六、度量衡 === -->
+    <section class="chapter" id="ch16">
+      <div class="chapter-header" onclick="toggle(this)">
+        <div class="chapter-num">第十六篇</div>
+        <div class="chapter-title">度量衡與貨幣</div>
+        <div class="chapter-toggle">▾</div>
+      </div>
+      <div class="chapter-body">
+
+        <div class="section">
+          <span class="section-label">換算</span>
+          <div class="quote">
+            1 兩金 = 10 兩銀 / 1 兩銀 = 10 錢 = 100 分 ≈ 1 貫 = 1000 文<br>
+            1 斤 = 16 兩 / 1 擔 = 100 斤<br>
+            1 石 = 10 斗 = 100 升<br>
+            1 頃 = 100 畝 / 1 丈 = 10 尺 / 1 里 ≈ 500 公尺
+          </div>
+        </div>
+
+        <div class="section">
+          <span class="section-label gold">賞賜金額感</span>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>金額</th><th>意義</th></tr></thead>
+              <tbody>
+                <tr><td>幾十文</td><td>小宮女打賞</td></tr>
+                <tr><td>一兩</td><td>體面的賞錢</td></tr>
+                <tr><td>十兩</td><td>傳話有功</td></tr>
+                <tr><td>五十兩</td><td>后妃重賞</td></tr>
+                <tr><td>百兩</td><td>大賞</td></tr>
+                <tr><td>千兩</td><td>重大恩賞</td></tr>
+                <tr><td>黃金十兩</td><td>極重賞賜</td></tr>
+                <tr><td>黃金百兩</td><td>國禮級別</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="section">
+          <span class="section-label">月例銀</span>
+          <p>皇后 1000+ / 皇貴妃 500-800 / 貴妃 300-500 / 妃 200-300 / 貴嬪 100-200 / 嬪 60-100 / 貴人 30-60 / 答應 5-15 兩</p>
+          <p class="footnote">低位答應突然賞出數十兩 → 背後有人或錢財來源可疑。</p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- === 十七、律法刑罰 === -->
+    <section class="chapter" id="ch17">
+      <div class="chapter-header" onclick="toggle(this)">
+        <div class="chapter-num">第十七篇</div>
+        <div class="chapter-title">律法與刑罰</div>
+        <div class="chapter-toggle">▾</div>
+      </div>
+      <div class="chapter-body">
+
+        <div class="section">
+          <span class="section-label">五刑</span>
+          <p><strong>笞</strong>（小杖）→ <strong>杖</strong>（重杖）→ <strong>徒</strong>（一至三年作役）→ <strong>流</strong>（二千／二千五百／三千里）→ <strong>死</strong>（絞、斬、棄市、凌遲）</p>
+        </div>
+
+        <div class="section">
+          <span class="section-label gold">十惡</span>
+          <p>謀反 / 謀大逆 / 謀叛 / 惡逆 / 不道 / 大不敬 / 不孝 / 不睦 / 不義 / 內亂</p>
+          <div class="quote">十惡不在常赦之列，不得以銀贖，不得私下和解。</div>
+        </div>
+
+        <div class="section">
+          <span class="section-label">身份分流審判</span>
+          <ul>
+            <li><strong>宗室</strong> → 宗人府</li>
+            <li><strong>后妃</strong> → 皇后、皇帝裁，慎刑司執行</li>
+            <li><strong>高官</strong> → 刑部、大理寺、都察院三法司會審</li>
+            <li><strong>女官／命婦／女眷</strong> → 女史臺、女察院初查</li>
+            <li><strong>軍人</strong> → 軍法司</li>
+            <li><strong>庶民</strong> → 府縣</li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <span class="section-label">附刑（女眷常用）</span>
+          <p>申飭 → 罰俸 → 禁足 → 遷宮／遷院 → 奪宮權 → 降位 → 奪封號 → 廢為庶人 → 賜死</p>
+          <p class="footnote">尊貴身分不行公刑，得賜死（白綾、鴆酒、藥）。</p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- === 十八、醫療藥事 === -->
+    <section class="chapter" id="ch18">
+      <div class="chapter-header" onclick="toggle(this)">
+        <div class="chapter-num">第十八篇</div>
+        <div class="chapter-title">醫療與藥事</div>
+        <div class="chapter-toggle">▾</div>
+      </div>
+      <div class="chapter-body">
+
+        <div class="section">
+          <span class="section-label">五大系統</span>
+          <ul>
+            <li><strong>太醫院</strong>：掌醫官、診治皇室、審核脈案</li>
+            <li><strong>御藥房</strong>：管宮中藥材、配方、留樣</li>
+            <li><strong>尚藥局</strong>：后妃日常湯藥、補品、香藥發放</li>
+            <li><strong>女醫署</strong>：婦科、產科、女眷診療</li>
+            <li><strong>軍醫署</strong>：邊軍、禁軍傷兵</li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <span class="section-label gold">后妃孕事流程</span>
+          <p>疑孕 → 三日內復診 → 滿三次脈象相合，記為疑孕 → 滿三月確認胎穩 → 上報皇帝皇后太后 → 增份例、安胎藥、女醫看護 → 產前封院 → 生產時女醫穩婆尚宮局太醫院記錄 → 出生後報皇帝 → 賜名、滿月、入宗籍</p>
+        </div>
+
+        <div class="section">
+          <span class="section-label">禁香禁藥</span>
+          <p>麝香 / 紅花 / 桃仁 / 砒霜 / 烏頭 / 馬錢子 / 迷香 / 暖夢香 / 安胎香（私製）/ 南疆蠱藥 / 風月催情香 / 墮胎方</p>
+          <p class="footnote">不得入宮禁、入王府、入命婦宅。違者沒物、杖流；以禁香害人者斬。</p>
+        </div>
+
+        <div class="section">
+          <span class="section-label">查案三件套</span>
+          <div class="quote">
+            <strong>香案</strong>：香灰、香丸殘渣、香匣、留樣、香方<br>
+            <strong>毒案</strong>：藥渣、食物殘渣、藥盞、器皿、症狀<br>
+            <strong>孕事</strong>：多次脈案、侍寢冊、宮門冊、女醫診斷
+          </div>
+        </div>
+
+        <div class="section">
+          <span class="section-label">女醫官等級</span>
+          <p>女醫令（正五品）→ 女醫丞（正六品）→ 女御醫（六-七品）→ 女太醫（七-八品）→ 醫女、女藥官、穩婆官</p>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<button class="top-btn" id="topBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+  // 摺疊
+  function toggle(header) {
+    const chapter = header.parentElement;
+    chapter.classList.toggle('collapsed');
+  }
+
+  // 預設第一章展開，其餘收合
+  document.addEventListener('DOMContentLoaded', () => {
+    const chapters = document.querySelectorAll('.chapter');
+    chapters.forEach((ch, i) => {
+      if (i > 0) ch.classList.add('collapsed');
+    });
+  });
+
+  // 全展／全收
+  document.getElementById('expand-all').addEventListener('click', () => {
+    document.querySelectorAll('.chapter').forEach(ch => ch.classList.remove('collapsed'));
+  });
+
+  document.getElementById('collapse-all').addEventListener('click', () => {
+    document.querySelectorAll('.chapter').forEach(ch => ch.classList.add('collapsed'));
+  });
+
+  // 回頂按鈕
+  const topBtn = document.getElementById('topBtn');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 400) topBtn.classList.add('show');
+    else topBtn.classList.remove('show');
+  });
+
+  // 點目錄時自動展開
+  document.querySelectorAll('.toc a').forEach(link => {
+    link.addEventListener('click', (e) => {
+      const targetId = link.getAttribute('href').slice(1);
+      const target = document.getElementById(targetId);
+      if (target) target.classList.remove('collapsed');
+    });
+  });
+
+  // 搜尋
+  const search = document.getElementById('search');
+  search.addEventListener('input', (e) => {
+    const q = e.target.value.toLowerCase().trim();
+    const chapters = document.querySelectorAll('.chapter');
+
+    if (!q) {
+      chapters.forEach(ch => ch.classList.remove('hidden'));
+      document.querySelectorAll('.toc li').forEach(li => li.classList.remove('hidden'));
+      return;
+    }
+
+    chapters.forEach(ch => {
+      const text = ch.textContent.toLowerCase();
+      const tocLink = document.querySelector(`.toc a[href="#${ch.id}"]`);
+      if (text.includes(q)) {
+        ch.classList.remove('hidden');
+        ch.classList.remove('collapsed');
+        if (tocLink) tocLink.parentElement.classList.remove('hidden');
+      } else {
+        ch.classList.add('hidden');
+        if (tocLink) tocLink.parentElement.classList.add('hidden');
+      }
+    });
+  });
+</script>
+
+</body>
+</html>

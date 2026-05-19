@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <title>議親室 — 宗族之書</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    /* 議親室專屬樣式 — 沿用亂點鴛鴦譜的卡片質感,但配色貼合宗族之書 */
+    .match-page {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 28px;
+    }
+    .match-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 18px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    .match-kicker {
+      font-size: 12px;
+      letter-spacing: .28em;
+      color: #8b7355;
+      margin: 0 0 8px;
+    }
+    .match-header h1 {
+      font-size: 30px;
+      margin: 0;
+      letter-spacing: -0.02em;
+    }
+    .match-subtitle {
+      max-width: 680px;
+      color: #6b5b48;
+      margin: 12px 0 0;
+      font-size: 14px;
+    }
+    .toolbar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .match-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 22px;
+      align-items: start;
+    }
+    .match-card {
+      background: #fffdf8;
+      border: 1px solid #d4c5a3;
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 1px 2px rgba(0,0,0,.04);
+    }
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .two-col label {
+      display: block;
+      font-size: 13px;
+      color: #8b7355;
+      margin-bottom: 6px;
+    }
+    .person-card {
+      margin-top: 10px;
+      padding: 12px;
+      background: #f7f1e3;
+      border-radius: 12px;
+      font-size: 13px;
+      white-space: pre-wrap;
+      line-height: 1.7;
+      min-height: 100px;
+    }
+    .case-card {
+      padding: 18px;
+      border: 1px solid #d4c5a3;
+      border-radius: 16px;
+      background: #fef9ed;
+      margin-top: 18px;
+    }
+    .case-card h2 {
+      margin: 4px 0 10px;
+      font-size: 20px;
+    }
+    pre.summary {
+      white-space: pre-wrap;
+      margin: 0;
+      background: #fffdf8;
+      border-radius: 12px;
+      padding: 12px;
+      color: #4a3f33;
+      font-size: 14px;
+      line-height: 1.8;
+      font-family: inherit;
+    }
+    .action-panel {
+      margin-top: 18px;
+      padding: 16px;
+      background: #f7f1e3;
+      border-radius: 16px;
+    }
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .action-btn {
+      text-align: left;
+      border: 1px solid #c9b88a;
+      border-radius: 12px;
+      background: #fffdf8;
+      padding: 12px;
+      cursor: pointer;
+      min-height: 52px;
+      font: inherit;
+      transition: .15s ease;
+      color: #4a3f33;
+    }
+    .action-btn:hover {
+      background: #4a3f33;
+      color: #fffdf8;
+    }
+    .action-btn.pending {
+      background: #fef3c7;
+      border-color: #b8860b;
+      color: #4a3f33;
+    }
+    .pending-note {
+      font-size: 11px;
+      color: #b8860b;
+      margin-left: 4px;
+    }
+    .input-panel {
+      margin-top: 12px;
+      padding: 14px;
+      background: rgba(254,243,199,.5);
+      border: 1px solid #e2c98c;
+      border-radius: 14px;
+    }
+    .input-panel.hidden { display: none; }
+    .input-panel-title {
+      font-size: 11px;
+      color: #b8860b;
+      font-weight: 700;
+      letter-spacing: .15em;
+      margin-bottom: 10px;
+    }
+    .input-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .input-grid.three { grid-template-columns: 1fr 1fr 1fr; }
+    .input-grid label {
+      display: block;
+      font-size: 12px;
+      color: #8b7355;
+      margin-bottom: 4px;
+    }
+    .input-grid input, .input-grid select {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid #c9b88a;
+      border-radius: 10px;
+      background: #fffdf8;
+      font: inherit;
+    }
+    .confirm-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .history {
+      margin-top: 18px;
+    }
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .history-header h3 {
+      margin: 0;
+      font-size: 18px;
+    }
+    .small-muted {
+      color: #8b7355;
+      font-size: 12px;
+    }
+    .chapter {
+      border: 1px solid #d4c5a3;
+      background: #fffdf8;
+      border-radius: 14px;
+      padding: 12px;
+      font-size: 13px;
+      margin-bottom: 8px;
+      line-height: 1.7;
+    }
+    .chapter.event {
+      background: #fef9ed;
+      border-color: #e2c98c;
+    }
+    .chapter-title {
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .reaction-box {
+      margin-top: 8px;
+      background: #f7f1e3;
+      border-radius: 10px;
+      padding: 8px 10px;
+    }
+    .reaction-title {
+      font-weight: 700;
+      margin-bottom: 6px;
+      font-size: 12px;
+    }
+    .side-stack {
+      display: grid;
+      gap: 16px;
+    }
+    .note-list {
+      padding-left: 0;
+      margin: 0;
+      list-style: none;
+      color: #6b5b48;
+      font-size: 13px;
+    }
+    .note-list li { margin-bottom: 6px; }
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: #6b5b48;
+    }
+    .modal-backdrop {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.4);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 18px;
+      z-index: 999;
+    }
+    .modal-backdrop.active { display: flex; }
+    .modal-inner {
+      width: min(900px, 100%);
+      max-height: 86vh;
+      background: #fffdf8;
+      border-radius: 18px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .modal-header {
+      padding: 14px;
+      border-bottom: 1px solid #d4c5a3;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-header h3 { margin: 0; font-size: 16px; }
+    .modal-tabs {
+      display: flex;
+      gap: 6px;
+      padding: 10px;
+      border-bottom: 1px solid #d4c5a3;
+    }
+    .tab {
+      border: none;
+      border-radius: 10px;
+      padding: 6px 12px;
+      background: #f7f1e3;
+      cursor: pointer;
+      font: inherit;
+      color: #4a3f33;
+    }
+    .tab.active { background: #4a3f33; color: #fffdf8; }
+    .modal-search {
+      display: flex;
+      gap: 6px;
+      padding: 10px;
+    }
+    .modal-search input, .modal-search select {
+      flex: 1;
+      padding: 8px;
+      border: 1px solid #c9b88a;
+      border-radius: 10px;
+      background: #fffdf8;
+      font: inherit;
+    }
+    .modal-body {
+      padding: 10px;
+      overflow: auto;
+    }
+    .archive-item {
+      border: 1px solid #d4c5a3;
+      background: #fffdf8;
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 8px;
+    }
+    .archive-item.event-archive { background: #fef9ed; }
+    .archive-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: start;
+    }
+    .archive-name { font-weight: 700; font-size: 15px; }
+    .archive-sub { color: #8b7355; font-size: 12px; margin-top: 2px; }
+    .archive-pre {
+      white-space: pre-wrap;
+      background: #f7f1e3;
+      border-radius: 10px;
+      padding: 8px 10px;
+      margin-top: 8px;
+      color: #4a3f33;
+      font-family: inherit;
+      font-size: 12px;
+      line-height: 1.7;
+    }
+    .suggestion-score { color: #8b7355; font-size: 12px; margin-top: 2px; }
+    .reason { font-size: 13px; margin-top: 6px; line-height: 1.6; }
+    .concern-label { color: #b45309; }
+    .empty {
+      text-align: center;
+      color: #8b7355;
+      padding: 20px;
+      font-size: 13px;
+    }
+    .hidden { display: none !important; }
+    select#aPerson, select#bPerson {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid #c9b88a;
+      border-radius: 10px;
+      background: #fffdf8;
+      font: inherit;
+    }
+    @media (max-width: 900px) {
+      .match-page { padding: 16px; }
+      .match-grid { grid-template-columns: 1fr; }
+      .two-col, .actions, .input-grid, .input-grid.three { grid-template-columns: 1fr; }
+    }
+
+    /* ============ v6+:議親條件單 ============ */
+    .intent-section {
+      padding: 14px 16px;
+      border-bottom: 1px dashed #d4c5a3;
+    }
+    .intent-section:last-child { border-bottom: none; }
+    .intent-section-title {
+      font-size: 13px;
+      letter-spacing: .08em;
+      color: #6b5b48;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .intent-count {
+      font-size: 11px;
+      color: #8b7355;
+      background: #f7f1e3;
+      padding: 2px 8px;
+      border-radius: 10px;
+    }
+
+    /* 婚事性質卡 */
+    .intent-kind-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 8px;
+    }
+    .intent-kind {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 10px 12px;
+      border: 1px solid #d4c5a3;
+      border-radius: 10px;
+      background: #fffdf8;
+      cursor: pointer;
+      transition: background .15s;
+    }
+    .intent-kind:hover { background: #fbf6e8; }
+    .intent-kind.selected {
+      background: #4a3f33;
+      color: #fffdf8;
+      border-color: #4a3f33;
+    }
+    .intent-kind.selected .intent-kind-hint { color: #e8dec8; }
+    .intent-kind input { margin-top: 3px; }
+    .intent-kind-title { font-size: 14px; font-weight: 600; }
+    .intent-kind-hint { font-size: 11px; color: #8b7355; margin-top: 2px; }
+
+    /* 看重 / 忌諱勾選 */
+    .intent-check-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 6px;
+    }
+    .intent-check {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      padding: 6px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+    .intent-check:hover { background: #f7f1e3; }
+    .intent-check input { cursor: pointer; }
+
+    /* 子區塊(出身、職業詳細選擇) */
+    .intent-subblock {
+      margin-top: 10px;
+      padding: 10px 12px;
+      background: #f7f1e3;
+      border-radius: 10px;
+      transition: opacity .2s;
+    }
+    .intent-subblock.disabled {
+      opacity: 0.4;
+      pointer-events: none;
+    }
+    .intent-sub-title {
+      font-size: 12px;
+      color: #6b5b48;
+      margin-bottom: 6px;
+    }
+    .intent-tag-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .intent-tag {
+      padding: 4px 10px;
+      border: 1px solid #c9b88a;
+      border-radius: 14px;
+      background: #fffdf8;
+      font-size: 12px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .intent-tag:hover { background: #fbf6e8; }
+    .intent-tag.selected {
+      background: #4a3f33;
+      color: #fffdf8;
+      border-color: #4a3f33;
+    }
+    #intentTabooOriginSel {
+      width: 100%;
+      padding: 6px 10px;
+      border: 1px solid #c9b88a;
+      border-radius: 8px;
+      background: #fffdf8;
+      font: inherit;
+    }
+
+    /* 備註 */
+    #intentNote {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid #c9b88a;
+      border-radius: 10px;
+      background: #fffdf8;
+      font: inherit;
+      resize: vertical;
+    }
+
+    /* 採用按鈕列 */
+    .intent-actions {
+      padding: 14px 16px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      background: #f7f1e3;
+    }
+    .btn-primary {
+      background: #4a3f33;
+      color: #fffdf8;
+      border-color: #4a3f33;
+    }
+
+    /* ============ 推薦清單頂部的條件摘要 ============ */
+    .intent-summary {
+      background: #f7f1e3;
+      border: 1px solid #d4c5a3;
+      border-radius: 10px;
+      padding: 10px 12px;
+      margin-bottom: 10px;
+      font-size: 12px;
+    }
+    .intent-summary-row {
+      display: flex;
+      gap: 8px;
+      padding: 2px 0;
+    }
+    .intent-summary-label {
+      color: #8b7355;
+      min-width: 64px;
+      flex-shrink: 0;
+    }
+    .intent-summary-value { color: #4a3f33; }
+    .intent-summary-actions {
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .intent-summary-hint {
+      font-size: 11px;
+      color: #a39074;
+      font-style: italic;
+    }
+
+    /* ============ v6+:劇情議親案卷 ============ */
+    .nar-header {
+      padding: 14px 16px;
+      border-bottom: 1px dashed #d4c5a3;
+    }
+    .nar-pair {
+      font-size: 16px;
+      font-weight: 600;
+      color: #4a3f33;
+      margin-bottom: 10px;
+    }
+    .nar-stages {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+    .nar-stage-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: 14px;
+      font-size: 12px;
+      background: #f7f1e3;
+      color: #8b7355;
+      border: 1px solid #d4c5a3;
+    }
+    .nar-stage-pill.done {
+      background: #e6dec4;
+      color: #6b5b48;
+    }
+    .nar-stage-pill.current {
+      background: #4a3f33;
+      color: #fffdf8;
+      border-color: #4a3f33;
+    }
+    .nar-stage-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      font-size: 10px;
+    }
+    .nar-stage-pill.pending .nar-stage-num {
+      background: #d4c5a3;
+      color: #fff;
+    }
+
+    /* 合適度條 */
+    .nar-score-block {
+      padding: 14px 16px;
+      border-bottom: 1px dashed #d4c5a3;
+    }
+    .nar-score-label {
+      font-size: 12px;
+      letter-spacing: .08em;
+      color: #8b7355;
+      margin-bottom: 6px;
+    }
+    .nar-score-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .nar-score-bar {
+      flex: 1;
+      height: 18px;
+      background: #f0e8d2;
+      border-radius: 9px;
+      overflow: hidden;
+      box-shadow: inset 0 1px 2px rgba(0,0,0,0.08);
+    }
+    .nar-score-fill {
+      height: 100%;
+      border-radius: 9px;
+    }
+    .nar-score-num {
+      font-size: 24px;
+      font-weight: 700;
+      min-width: 50px;
+      text-align: right;
+    }
+    .nar-score-trail {
+      font-size: 11px;
+      color: #a39074;
+      margin-top: 5px;
+      font-style: italic;
+    }
+
+    /* 事件卡 */
+    .nar-event {
+      padding: 16px;
+      border-bottom: 1px dashed #d4c5a3;
+    }
+    .nar-event-kicker {
+      font-size: 11px;
+      letter-spacing: .15em;
+      color: #8b7355;
+      margin-bottom: 6px;
+    }
+    .nar-event-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #4a3f33;
+      margin-bottom: 10px;
+    }
+    .nar-event-body {
+      font-size: 14px;
+      line-height: 1.7;
+      color: #4a3f33;
+      padding: 12px 14px;
+      background: #f7f1e3;
+      border-radius: 10px;
+      margin-bottom: 14px;
+    }
+
+    /* 選項 */
+    .nar-choices {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .nar-choice {
+      text-align: left;
+      padding: 12px 14px;
+      border: 1px solid #d4c5a3;
+      border-radius: 12px;
+      background: #fffdf8;
+      cursor: pointer;
+      font: inherit;
+      transition: background .15s, border-color .15s, transform .1s;
+    }
+    .nar-choice:hover {
+      background: #fbf6e8;
+      border-color: #4a3f33;
+    }
+    .nar-choice:active {
+      transform: scale(0.99);
+    }
+    .nar-choice-head {
+      margin-bottom: 4px;
+    }
+    .nar-choice-delta {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .nar-choice-delta.pos { background: #dcebc9; color: #5b7a3a; }
+    .nar-choice-delta.neg { background: #f0d4c4; color: #a3491e; }
+    .nar-choice-delta.unknown {
+      background: #e8dec8;
+      color: #6b5b48;
+    }
+    .nar-choice-label {
+      font-size: 14px;
+      color: #4a3f33;
+      line-height: 1.5;
+    }
+    .nar-choice-hint {
+      font-size: 11px;
+      color: #a39074;
+      font-style: italic;
+      margin-top: 4px;
+    }
+
+    /* 結局 */
+    .nar-outcome {
+      padding: 18px 16px;
+      border-bottom: 1px dashed #d4c5a3;
+      text-align: center;
+      background: linear-gradient(180deg, #fffdf8 0%, #f7f1e3 100%);
+    }
+    .nar-outcome-label {
+      font-size: 12px;
+      letter-spacing: .2em;
+      color: #8b7355;
+      margin-bottom: 8px;
+    }
+    .nar-outcome-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: #4a3f33;
+      margin-bottom: 6px;
+    }
+    .nar-outcome-desc {
+      font-size: 13px;
+      color: #6b5b48;
+      line-height: 1.7;
+    }
+
+    /* 歷史紀錄 */
+    .nar-history {
+      padding: 14px 16px;
+      background: #f7f1e3;
+    }
+    .nar-history-title {
+      font-size: 11px;
+      letter-spacing: .15em;
+      color: #8b7355;
+      margin-bottom: 10px;
+    }
+    .nar-history-row {
+      padding: 8px 0;
+      border-bottom: 1px dashed #d4c5a3;
+    }
+    .nar-history-row:last-child { border-bottom: none; }
+    .nar-history-stage {
+      font-size: 13px;
+      font-weight: 600;
+      color: #4a3f33;
+    }
+    .nar-history-choice {
+      font-size: 12px;
+      color: #6b5b48;
+      margin-top: 2px;
+    }
+    .nar-delta {
+      display: inline-block;
+      padding: 1px 8px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-left: 6px;
+    }
+    .nar-delta.pos { background: #dcebc9; color: #5b7a3a; }
+    .nar-delta.neg { background: #f0d4c4; color: #a3491e; }
+    .nar-history-conseq {
+      font-size: 12px;
+      color: #8b7355;
+      margin-top: 4px;
+      font-style: italic;
+      line-height: 1.6;
+    }
+
+    /* ============ v6+:過往痕跡 (flag) 區塊 ============ */
+    /* 設計原則:
+       - 僅在這對夫妻有 flag 時才顯示(JS 控制 .pair-flags-section 是否有 .has-flags class)
+       - 風格與 nar-history 一致(米色背景、虛線分隔、淡褐色字),但不額外凸顯
+       - flag 名稱以「徽章」形式並排,每個 flag 為一格 — 一眼可看出共有多少
+    */
+    .pair-flags-section {
+      display: none;   /* 預設不顯示,有 flag 時 JS 加 has-flags class */
+    }
+    .pair-flags-section.has-flags {
+      display: block;
+      margin-top: 14px;
+      padding: 12px 14px;
+      background: #f7f1e3;
+      border-radius: 4px;
+      border-left: 3px solid #c9b07e;
+    }
+    .pair-flags-title {
+      font-size: 11px;
+      letter-spacing: .15em;
+      color: #8b7355;
+      margin-bottom: 8px;
+    }
+    .pair-flags-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .pair-flag-chip {
+      display: inline-block;
+      padding: 3px 10px;
+      background: #ede0c5;
+      border: 1px solid #c9b07e;
+      border-radius: 12px;
+      font-size: 12px;
+      color: #4a3f33;
+      line-height: 1.5;
+    }
+    .chapter-pre {
+      font: inherit;
+      margin: 4px 0 0;
+      white-space: pre-wrap;
+      color: #4a3f33;
+      line-height: 1.7;
+    }
+    .chapter.narrative {
+      border-left: 3px solid #a08544;
+      background: #fdf9ed;
+    }
+
+    /* ============ v6+:議親狀態區的合適度條 ============ */
+    .pair-score-empty {
+      margin-top: 10px;
+      padding: 8px 10px;
+      background: #f7f1e3;
+      border-radius: 8px;
+      font-size: 12px;
+      color: #8b7355;
+      font-style: italic;
+    }
+    .pair-score-block {
+      margin-top: 12px;
+      padding: 10px 12px;
+      background: #f7f1e3;
+      border-radius: 10px;
+    }
+    .pair-score-label {
+      font-size: 11px;
+      letter-spacing: .1em;
+      color: #8b7355;
+      margin-bottom: 5px;
+    }
+    .pair-score-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .pair-score-bar {
+      flex: 1;
+      height: 14px;
+      background: #fffdf8;
+      border-radius: 7px;
+      overflow: hidden;
+      box-shadow: inset 0 1px 2px rgba(0,0,0,0.08);
+    }
+    .pair-score-fill {
+      height: 100%;
+      border-radius: 7px;
+      transition: width .4s, background .4s;
+    }
+    .pair-score-num {
+      font-size: 20px;
+      font-weight: 700;
+      min-width: 40px;
+      text-align: right;
+    }
+    .pair-score-trail {
+      font-size: 11px;
+      color: #a39074;
+      margin-top: 4px;
+      font-style: italic;
+    }
+    .pair-score-break-warn {
+      margin-top: 8px;
+      padding: 6px 10px;
+      background: #f0d4c4;
+      border-left: 2px solid #a3491e;
+      border-radius: 4px;
+      font-size: 12px;
+      color: #6b3014;
+      line-height: 1.6;
+    }
+    .pair-score-details {
+      margin-top: 8px;
+      font-size: 12px;
+    }
+    .pair-score-details summary {
+      cursor: pointer;
+      color: #6b5b48;
+      padding: 4px 0;
+    }
+    .pair-score-hist-row {
+      padding: 6px 0;
+      border-top: 1px dashed #d4c5a3;
+    }
+    .pair-score-hist-choice {
+      color: #6b5b48;
+      margin-top: 2px;
+    }
+    .pair-score-hist-conseq {
+      color: #8b7355;
+      font-style: italic;
+      margin-top: 3px;
+      line-height: 1.6;
+    }
+
+    /* 劇情視窗警示 */
+    .nar-warning {
+      margin: 0 16px 12px;
+      padding: 10px 12px;
+      background: #f0d4c4;
+      border-left: 3px solid #a3491e;
+      border-radius: 6px;
+      color: #6b3014;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+  </style>
+</head>
+<body>
+  <main class="match-page">
+    <section class="match-header">
+      <div>
+        <p class="match-kicker">MATCHMAKING CASE FLOW</p>
+        <h1>議親室</h1>
+        <p class="match-subtitle">案件流程:議親 → 定親(寫入族譜)→ 婚期 → 成婚 → 婚後事件。處理結果會直接同步到宗族之書。</p>
+      </div>
+      <div class="toolbar">
+        <label class="toggle-row">
+          <input type="checkbox" id="forcePickToggle" />
+          強推(可挑任何在世人物)
+        </label>
+        <label class="toggle-row">
+          <input type="checkbox" id="skipNarrativeToggle" />
+          簡明模式(跳過劇情)
+        </label>
+        <button class="btn primary-btn" id="randomizeBtn">隨機開案</button>
+        <button class="btn" id="rollBtn">擲一下</button>
+        <button class="btn" id="archiveBtn">翻檔案</button>
+        <button class="btn back-btn" onclick="window.location='index.html'">← 返回主頁</button>
+      </div>
+    </section>
+
+    <section class="match-grid">
+      <div class="match-card">
+        <div class="two-col">
+          <div>
+            <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;">
+              <label>人物 A</label>
+              <button class="btn" id="suggestABtn" style="font-size:12px;padding:6px 10px;">看誰適合 A</button>
+            </div>
+            <label style="font-size:11px;color:#8b7355;margin-top:4px;">家族篩選</label>
+            <select id="aFamilyFilter"></select>
+            <label style="font-size:11px;color:#8b7355;margin-top:8px;">人物</label>
+            <select id="aPerson"></select>
+            <pre class="person-card" id="aInfo"></pre>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;">
+              <label>人物 B</label>
+              <button class="btn" id="suggestBBtn" style="font-size:12px;padding:6px 10px;">看誰適合 B</button>
+            </div>
+            <label style="font-size:11px;color:#8b7355;margin-top:4px;">家族篩選</label>
+            <select id="bFamilyFilter"></select>
+            <label style="font-size:11px;color:#8b7355;margin-top:8px;">人物</label>
+            <select id="bPerson"></select>
+            <pre class="person-card" id="bInfo"></pre>
+          </div>
+        </div>
+
+        <div class="case-card">
+          <div class="small-muted">系統判斷</div>
+          <h2 id="caseTitle"></h2>
+          <pre class="summary" id="caseSummary"></pre>
+          <div id="pairScoreBox"></div>
+        </div>
+
+        <div class="action-panel">
+          <label style="font-size:13px;color:#8b7355;">目前合理操作(按階段顯示)</label>
+          <div class="actions" id="actions"></div>
+
+          <div class="input-panel hidden" id="inputPanel">
+            <div class="input-panel-title">這一步的細節</div>
+            <div id="dynamicInputs"></div>
+            <div class="confirm-row">
+              <button type="button" class="btn primary-btn" id="confirmActionBtn" onclick="matchConfirm()">確認執行</button>
+              <button type="button" class="btn" id="cancelActionBtn" onclick="matchCancel()">取消</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="match-card history" style="margin-top:18px;padding:14px;">
+          <div class="history-header">
+            <h3>案卷進展</h3>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <span class="small-muted" id="historyCount">共 0 筆</span>
+              <button class="btn" id="clearChaptersBtn" style="font-size:11px;padding:4px 8px;">清空案卷</button>
+            </div>
+          </div>
+          <div id="chapters"></div>
+          <!-- 過往痕跡:當這對夫妻有 flag 時才會被填入內容並顯示;無 flag 時保持空白(CSS 控制) -->
+          <div id="pairFlags" class="pair-flags-section"></div>
+        </div>
+      </div>
+
+      <aside class="side-stack">
+        <div class="match-card">
+          <h3 style="margin-top:0;">提醒</h3>
+          <ul class="note-list">
+            <li>· <strong>口頭議親</strong>不寫入族譜,只記在案卷上</li>
+            <li>· <strong>正式定親</strong>會在族譜寫入「訂婚」紀錄</li>
+            <li>· <strong>成婚</strong>會補上 marryYear,類型改為平妻／妾／繼室</li>
+            <li>· 駁回／悔婚只能撤回「訂婚」,真成婚後不會被撤銷</li>
+            <li>· 強推可挑任何在世人物,跳過適齡未婚限制</li>
+            <li>· 擲一下、看看誰適合與翻檔案都會用目前角色池</li>
+          </ul>
+        </div>
+
+        <div class="match-card">
+          <h3 style="margin-top:0;">使用提示</h3>
+          <ul class="note-list">
+            <li>· 想新增人物或家族,請回主頁建立</li>
+            <li>· 案件結果即時同步存檔,可在主頁查看更新後的人物詳情</li>
+            <li>· 案卷紀錄存在記憶體中,重新整理後會清空</li>
+          </ul>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <!-- 翻檔案 -->
+  <div class="modal-backdrop" id="archiveModal">
+    <div class="modal-inner">
+      <div class="modal-header">
+        <h3>翻檔案</h3>
+        <button class="btn" id="closeArchiveBtn">關閉</button>
+      </div>
+      <div class="modal-tabs">
+        <button class="tab active" id="peopleTab">人物名冊</button>
+        <button class="tab" id="eventsTab">案卷紀錄</button>
+      </div>
+      <div class="modal-search">
+        <input id="archiveSearch" placeholder="搜尋姓名／家族／身分／備註／事件內容" />
+        <select id="archiveFilter"></select>
+      </div>
+      <div class="modal-body" id="archiveBody"></div>
+    </div>
+  </div>
+
+  <!-- 看看誰適合 -->
+  <div class="modal-backdrop" id="suggestionsModal">
+    <div class="modal-inner">
+      <div class="modal-header">
+        <h3 id="suggestionsTitle">議親建議</h3>
+        <button class="btn" id="closeSuggestionsBtn">關閉</button>
+      </div>
+      <div class="modal-body" id="suggestionsBody"></div>
+    </div>
+  </div>
+
+  <!-- v6+:議親條件單(本次議親意向) -->
+  <div class="modal-backdrop" id="intentModal">
+    <div class="modal-inner">
+      <div class="modal-header">
+        <h3 id="intentTitle">本次議親條件</h3>
+        <button class="btn" id="closeIntentBtn">關閉</button>
+      </div>
+      <div class="modal-body" id="intentBody"></div>
+    </div>
+  </div>
+
+  <!-- v6+:劇情議親案卷 -->
+  <div class="modal-backdrop" id="narrativeModal">
+    <div class="modal-inner">
+      <div class="modal-header">
+        <h3 id="narrativeTitle">劇情議親</h3>
+        <button class="btn" id="closeNarrativeBtn">關閉</button>
+      </div>
+      <div class="modal-body" id="narrativeBody"></div>
+    </div>
+  </div>
+
+  <!-- v6+:破局事由(誰提出) -->
+  <div class="modal-backdrop" id="dissolveModal">
+    <div class="modal-inner">
+      <div class="modal-header">
+        <h3 id="dissolveTitle">破局事由</h3>
+        <button class="btn" id="closeDissolveBtn">關閉</button>
+      </div>
+      <div class="modal-body" id="dissolveBody"></div>
+    </div>
+  </div>
+
+  <!-- DOM stub:供 family.js / 共用函式抓不到主頁元素時不爆 -->
+  <div style="display:none;">
+    <input id="personParentId" type="hidden" />
+    <button id="cancelChildModeBtn"></button>
+    <select id="personFamily"></select>
+  </div>
+
+  <!-- 載入順序:底層 → 領域 → 議親室本身 -->
+  <script src="js/constants.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/relations.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/time.js"></script>
+  <script src="js/family.js"></script>
+  <script src="js/match.js"></script>
+</body>
+</html>

@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<title>大周名位卷宗｜宗族之書</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css" />
+<style>
+/* ============================================================
+   大周名位卷宗 — 紙感美學樣式 (沿用 dazhouonly 設計語言)
+   ============================================================ */
+:root{
+  --dz-ink:#1a1410;
+  --dz-paper:#ede3cc;
+  --dz-paper-deep:#ddd0b2;
+  --dz-paper-light:#f6efd9;
+  --dz-paper-shadow:#b8a583;
+  --dz-vermilion:#8b2a1f;
+  --dz-vermilion-soft:rgba(139,42,31,.08);
+  --dz-gold:#8a6e3f;
+  --dz-gold-dim:#6b5530;
+  --dz-rule:rgba(107,85,48,.35);
+  --dz-rule-solid:#6b5530;
+  --dz-muted:#6a5940;
+  --dz-green:#3f5f45;
+  --dz-blue:#344f6a;
+  --dz-gray:#7a6e62;
+}
+
+body.dazhou-body {
+  font-family:"Noto Serif TC",serif;
+  background:var(--dz-paper);
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.75' numOctaves='4'/%3E%3CfeColorMatrix values='0 0 0 0 0.1 0 0 0 0 0.08 0 0 0 0 0.04 0 0 0 0.06 0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+  color:var(--dz-ink);
+  line-height:1.7;
+  min-height:100vh;
+  margin:0;
+  padding:0;
+}
+
+/* ── Header ── */
+.dz-header{
+  border-bottom:2px solid var(--dz-rule-solid);
+  padding:2.4rem 2rem 1.8rem;
+  text-align:center;
+  background:linear-gradient(180deg,var(--dz-paper-deep) 0%,var(--dz-paper) 100%);
+  position:relative;
+}
+.dz-header-ornament{
+  display:flex;align-items:center;justify-content:center;gap:1.2rem;margin-bottom:.6rem;
+}
+.dz-header-ornament-line{flex:1;max-width:120px;height:1px;background:linear-gradient(90deg,transparent,var(--dz-gold-dim))}
+.dz-header-ornament-line.r{background:linear-gradient(90deg,var(--dz-gold-dim),transparent)}
+.dz-header-ornament-diamond{
+  width:8px;height:8px;border:1.5px solid var(--dz-vermilion);transform:rotate(45deg);
+}
+.dz-header h1{
+  font-family:"Noto Serif TC",serif;
+  font-size:clamp(1.7rem,4vw,2.6rem);
+  letter-spacing:.4em;
+  font-weight:900;
+  line-height:1.2;
+  margin:0;
+  text-indent:.4em;
+}
+.dz-header .dz-sub{margin-top:.45rem;font-size:.85rem;color:var(--dz-muted);letter-spacing:.3em}
+.dz-back-row{
+  position:absolute;top:1rem;left:1rem;display:flex;gap:.5rem;
+}
+.dz-back-btn{
+  font-family:inherit;
+  background:transparent;
+  border:1px solid var(--dz-rule-solid);
+  color:var(--dz-muted);
+  padding:.35rem .75rem;
+  font-size:.82rem;
+  letter-spacing:.1em;
+  cursor:pointer;
+  transition:all .18s;
+}
+.dz-back-btn:hover{background:var(--dz-vermilion-soft);color:var(--dz-vermilion);border-color:var(--dz-vermilion)}
+
+/* ── Layout ── */
+.dz-layout{
+  display:grid;
+  grid-template-columns:200px minmax(0,1fr);
+  max-width:1500px;
+  margin:0 auto;
+}
+.dz-sidebar{
+  position:sticky;top:0;
+  max-height:100vh;overflow-y:auto;
+  padding:1.5rem 1rem;
+  border-right:1px solid var(--dz-rule);
+  background:var(--dz-paper-deep);
+}
+.dz-side-title{
+  font-size:.7rem;letter-spacing:.45em;color:var(--dz-vermilion);
+  margin-bottom:.8rem;padding-bottom:.5rem;
+  border-bottom:1px solid var(--dz-rule);
+}
+.dz-nav-btn{
+  display:block;width:100%;text-align:left;
+  padding:.5rem .65rem;margin-bottom:.2rem;
+  border:none;background:transparent;color:var(--dz-muted);cursor:pointer;
+  font-size:.88rem;letter-spacing:.04em;font-family:inherit;
+  border-left:2px solid transparent;transition:all .18s;
+}
+.dz-nav-btn:hover{color:var(--dz-vermilion);background:var(--dz-vermilion-soft);border-left-color:rgba(139,42,31,.3)}
+.dz-nav-btn.active{color:var(--dz-vermilion);background:var(--dz-vermilion-soft);border-left-color:var(--dz-vermilion);font-weight:600}
+.dz-side-note{
+  margin-top:1.2rem;padding-top:.8rem;border-top:1px dashed var(--dz-rule);
+  font-size:.72rem;color:var(--dz-muted);line-height:1.6;
+}
+
+.dz-main{padding:0 1.6rem 4rem}
+
+/* ── Toolbar ── */
+.dz-toolbar{
+  position:sticky;top:0;z-index:30;
+  background:rgba(237,227,204,.96);backdrop-filter:blur(8px);
+  padding:.9rem 0;
+  border-bottom:1px solid var(--dz-rule);
+  margin-bottom:1rem;
+}
+.dz-toolbar-row{
+  display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;
+}
+.dz-toolbar input[type="search"]{
+  flex:1;min-width:200px;
+  font-family:inherit;
+  padding:.5rem .75rem;
+  border:1px solid var(--dz-rule);background:var(--dz-paper-light);
+  font-size:.92rem;color:var(--dz-ink);
+}
+.dz-toolbar input[type="search"]:focus{outline:none;border-color:var(--dz-vermilion)}
+
+/* ── Buttons ── */
+.dz-btn{
+  font-family:inherit;
+  padding:.4rem .9rem;
+  border:1px solid var(--dz-rule-solid);
+  background:var(--dz-paper-light);
+  color:var(--dz-ink);
+  font-size:.85rem;letter-spacing:.08em;
+  cursor:pointer;
+  transition:all .15s;
+}
+.dz-btn:hover{background:var(--dz-paper-deep)}
+.dz-btn-primary{background:var(--dz-vermilion);color:var(--dz-paper-light);border-color:var(--dz-vermilion)}
+.dz-btn-primary:hover{background:#722217}
+.dz-btn-gold{background:var(--dz-gold);color:var(--dz-paper-light);border-color:var(--dz-gold-dim)}
+.dz-btn-gold:hover{background:var(--dz-gold-dim)}
+.dz-btn-danger{color:var(--dz-vermilion);border-color:var(--dz-vermilion)}
+.dz-btn-danger:hover{background:var(--dz-vermilion-soft)}
+.dz-btn-sm{padding:.25rem .65rem;font-size:.78rem}
+.dz-btn-add{
+  margin-top:.6rem;
+  width:100%;
+  background:transparent;
+  border:1px dashed var(--dz-rule-solid);
+  color:var(--dz-muted);
+  padding:.55rem;
+}
+.dz-btn-add:hover{background:var(--dz-vermilion-soft);color:var(--dz-vermilion);border-color:var(--dz-vermilion)}
+
+/* ── Stats ── */
+.dz-stats{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+  gap:.7rem;margin-bottom:1.4rem;
+}
+.dz-stat-card{
+  background:var(--dz-paper-light);
+  border:1px solid var(--dz-rule);
+  padding:.8rem 1rem;
+  text-align:center;
+  position:relative;
+}
+.dz-stat-card::before{
+  content:"";position:absolute;top:6px;left:6px;right:6px;bottom:6px;
+  border:1px solid var(--dz-rule);pointer-events:none;
+}
+.dz-stat-label{
+  font-size:.72rem;color:var(--dz-muted);
+  letter-spacing:.25em;margin-bottom:.3rem;
+}
+.dz-stat-num{
+  font-family:"Noto Serif TC",serif;
+  font-weight:700;
+  font-size:1.7rem;color:var(--dz-vermilion);
+}
+
+/* ── Section ── */
+.dz-section{margin-bottom:2rem}
+.dz-section-head{
+  display:flex;align-items:baseline;justify-content:space-between;
+  padding-bottom:.5rem;margin-bottom:.8rem;
+  border-bottom:1.5px solid var(--dz-rule-solid);
+}
+.dz-section-title{
+  font-family:"Noto Serif TC",serif;
+  font-weight:700;
+  font-size:1.4rem;letter-spacing:.25em;color:var(--dz-vermilion);
+}
+.dz-section-meta{
+  font-size:.75rem;color:var(--dz-muted);letter-spacing:.12em;
+}
+
+/* ── Position Card ── */
+.dz-position-list{display:flex;flex-direction:column;gap:.5rem}
+.dz-position-card{
+  background:var(--dz-paper-light);
+  border:1px solid var(--dz-rule);
+  transition:border-color .15s;
+}
+.dz-position-card:hover{border-color:var(--dz-gold-dim)}
+.dz-position-card.open{border-color:var(--dz-vermilion);background:#f9f3df}
+
+.dz-position-summary{
+  display:grid;
+  grid-template-columns:60px minmax(0,1fr) auto;
+  gap:.8rem;align-items:center;
+  padding:.7rem .9rem;
+  cursor:pointer;
+}
+.dz-ps-cat{
+  font-size:.7rem;color:var(--dz-muted);
+  letter-spacing:.2em;text-align:center;
+  border:1px solid var(--dz-rule);padding:.15rem .3rem;
+  background:var(--dz-paper);
+}
+.dz-ps-main{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem;min-width:0}
+.dz-ps-position{
+  font-family:"Noto Serif TC",serif;
+  font-weight:700;
+  font-size:1.05rem;color:var(--dz-ink);
+  letter-spacing:.08em;
+}
+.dz-ps-system, .dz-ps-rank{
+  font-size:.78rem;color:var(--dz-muted);
+  padding:.1rem .4rem;
+  background:var(--dz-paper);border:1px solid var(--dz-rule);
+}
+.dz-ps-rank{color:var(--dz-gold-dim);background:rgba(138,110,63,.08)}
+.dz-ps-occupants{
+  font-size:.82rem;color:var(--dz-vermilion);font-weight:500;
+  margin-left:.3rem;
+}
+.dz-ps-status{display:flex;flex-direction:column;align-items:flex-end;gap:.2rem}
+.dz-ps-quota{font-size:.72rem;color:var(--dz-muted);letter-spacing:.1em}
+
+.dz-pill{
+  display:inline-block;padding:.15rem .55rem;
+  font-size:.72rem;letter-spacing:.15em;
+  border:1px solid;
+}
+.dz-pill-empty{color:var(--dz-gray);border-color:var(--dz-gray);background:rgba(122,110,98,.08)}
+.dz-pill-partial{color:var(--dz-gold-dim);border-color:var(--dz-gold-dim);background:rgba(138,110,63,.08)}
+.dz-pill-full{color:var(--dz-green);border-color:var(--dz-green);background:rgba(63,95,69,.08)}
+
+/* ── Position Detail (展開區) ── */
+.dz-position-details{
+  border-top:1px dashed var(--dz-rule);
+  padding:.9rem;
+  background:rgba(255,255,255,.3);
+}
+.dz-detail-actions{
+  display:flex;gap:.5rem;justify-content:flex-end;
+  margin-bottom:.6rem;
+}
+.dz-details-note{
+  font-size:.82rem;color:var(--dz-muted);
+  font-style:italic;
+  padding:.4rem .6rem;
+  background:var(--dz-paper);
+  border-left:2px solid var(--dz-gold-dim);
+  margin-bottom:.7rem;
+}
+
+/* ── Slot ── */
+.dz-slot-list{display:flex;flex-direction:column;gap:.5rem}
+.dz-slot{
+  display:grid;grid-template-columns:60px 1fr auto;
+  gap:.7rem;align-items:start;
+  padding:.6rem .8rem;
+  background:var(--dz-paper);
+  border:1px solid var(--dz-rule);
+}
+.dz-slot-empty{opacity:.7}
+.dz-slot-empty .dz-slot-name{color:var(--dz-gray);font-style:italic}
+.dz-slot-deceased{opacity:.65;background:repeating-linear-gradient(45deg,var(--dz-paper) 0 6px,rgba(0,0,0,.02) 6px 12px)}
+.dz-slot-label{
+  font-size:.72rem;color:var(--dz-muted);
+  letter-spacing:.2em;
+  text-align:center;
+  padding-top:.2rem;
+}
+.dz-slot-main{min-width:0}
+.dz-slot-name{
+  font-family:"Noto Serif TC",serif;
+  font-weight:600;
+  font-size:1.05rem;color:var(--dz-vermilion);
+  text-decoration:none;
+  display:inline-block;
+  border-bottom:1px dotted transparent;
+  letter-spacing:.06em;
+}
+a.dz-slot-name:hover{border-bottom-color:var(--dz-vermilion)}
+.dz-slot-meta{
+  font-size:.78rem;color:var(--dz-muted);
+  margin-top:.2rem;
+}
+.dz-slot-note{
+  font-size:.78rem;color:var(--dz-ink);
+  margin-top:.3rem;padding:.25rem .5rem;
+  background:rgba(139,42,31,.04);
+  border-left:2px solid var(--dz-vermilion);
+}
+.dz-slot-note-person{
+  border-left-color:var(--dz-gold-dim);
+  background:rgba(138,110,63,.05);
+}
+.dz-slot-actions{display:flex;flex-direction:column;gap:.3rem}
+
+.dz-empty{
+  padding:2rem;text-align:center;color:var(--dz-muted);font-style:italic;
+  background:var(--dz-paper-light);border:1px dashed var(--dz-rule);
+}
+
+/* ── Dialog ── */
+.dz-dialog{
+  position:fixed;inset:0;
+  background:rgba(26,20,16,.5);
+  display:flex;align-items:center;justify-content:center;
+  z-index:100;
+  padding:1rem;
+}
+.dz-dialog.hidden{display:none}
+.dz-dialog-content{
+  background:var(--dz-paper-light);
+  border:2px solid var(--dz-rule-solid);
+  padding:1.4rem 1.6rem;
+  max-width:520px;width:100%;
+  max-height:90vh;overflow-y:auto;
+  position:relative;
+}
+.dz-dialog-content::before{
+  content:"";position:absolute;top:6px;left:6px;right:6px;bottom:6px;
+  border:1px solid var(--dz-rule);pointer-events:none;
+}
+.dz-dialog-title{
+  font-family:"Noto Serif TC",serif;
+  font-weight:700;
+  font-size:1.3rem;letter-spacing:.25em;
+  color:var(--dz-vermilion);
+  margin-bottom:1rem;padding-bottom:.5rem;
+  border-bottom:1px solid var(--dz-rule);
+}
+.dz-dlg-pos{
+  padding:.7rem .9rem;
+  background:var(--dz-paper);
+  border:1px solid var(--dz-rule);
+  margin-bottom:1rem;
+  display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;
+}
+.dz-dlg-pos strong{
+  font-family:"Noto Serif TC",serif;
+  font-weight:700;
+  font-size:1.1rem;color:var(--dz-vermilion);
+  letter-spacing:.08em;
+}
+.dz-dlg-pos span{font-size:.82rem;color:var(--dz-muted)}
+
+.dz-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:.8rem}
+.dz-form-grid label{
+  display:flex;flex-direction:column;gap:.25rem;
+  font-size:.78rem;color:var(--dz-muted);letter-spacing:.12em;
+}
+.dz-form-grid label.wide{grid-column:1/-1}
+.dz-form-grid input, .dz-form-grid select, .dz-form-grid textarea{
+  font-family:inherit;
+  padding:.4rem .55rem;
+  border:1px solid var(--dz-rule);
+  background:var(--dz-paper);
+  font-size:.9rem;color:var(--dz-ink);
+}
+.dz-form-grid input:focus, .dz-form-grid select:focus, .dz-form-grid textarea:focus{
+  outline:none;border-color:var(--dz-vermilion);
+}
+.dz-form-grid textarea{min-height:60px;resize:vertical}
+
+.dz-dialog-actions{
+  display:flex;gap:.5rem;justify-content:flex-end;
+  margin-top:1rem;padding-top:.8rem;
+  border-top:1px solid var(--dz-rule);
+}
+
+/* RWD */
+@media (max-width:768px){
+  .dz-layout{grid-template-columns:1fr}
+  .dz-sidebar{
+    position:static;max-height:none;
+    border-right:none;border-bottom:1px solid var(--dz-rule);
+  }
+  .dz-position-summary{grid-template-columns:1fr;gap:.4rem}
+  .dz-ps-status{flex-direction:row;align-items:center;justify-content:flex-start}
+  .dz-slot{grid-template-columns:1fr}
+  .dz-slot-actions{flex-direction:row}
+  .dz-form-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body class="dazhou-body">
+
+<header class="dz-header">
+  <div class="dz-back-row">
+    <button class="dz-back-btn" onclick="window.location='index.html'">← 返回宗族之書</button>
+    <button class="dz-back-btn" onclick="window.location='map.html'">地圖</button>
+    <button class="dz-back-btn" onclick="window.location='match.html'">議親室</button>
+  </div>
+  <div class="dz-header-ornament">
+    <div class="dz-header-ornament-line"></div>
+    <div class="dz-header-ornament-diamond"></div>
+    <div class="dz-header-ornament-line r"></div>
+  </div>
+  <h1>大周名位卷宗</h1>
+  <div class="dz-sub">職位與名分登錄冊・星曆 <span id="dazhouYearDisplay">—</span> 年</div>
+</header>
+
+<div class="dz-layout">
+
+  <aside class="dz-sidebar">
+    <div class="dz-side-title">分類</div>
+    <div id="dazhouNav"></div>
+    <div class="dz-side-note">
+      此處只列職銜與在任人物。<br>
+      派任的人物資料同步自宗族之書,點擊人名可跳回族譜詳情。<br><br>
+      新增/編輯/刪除職銜會影響整個世界,請斟酌。
+    </div>
+  </aside>
+
+  <main class="dz-main">
+
+    <div class="dz-toolbar">
+      <div class="dz-toolbar-row">
+        <input id="dazhouSearch" type="search" placeholder="搜尋職銜、系統、名分、在任人物...">
+        <button class="dz-btn dz-btn-primary" id="btnNewPosition">新增職銜</button>
+        <button class="dz-btn dz-btn-danger" id="btnResetPositions">重置骨架</button>
+      </div>
+    </div>
+
+    <section class="dz-stats" id="dazhouStats"></section>
+
+    <section id="dazhouSections"></section>
+
+  </main>
+</div>
+
+<!-- ====== 派任對話框 ====== -->
+<div class="dz-dialog hidden" id="appointDialog">
+  <div class="dz-dialog-content">
+    <div class="dz-dialog-title">派任人物</div>
+    <div id="apptPositionInfo"></div>
+
+    <div class="dz-form-grid">
+      <label class="wide">搜尋人物
+        <input type="text" id="apptSearchInput" placeholder="輸入姓名以縮小選項範圍">
+      </label>
+      <label class="wide">選擇人物
+        <select id="apptPersonSelect" size="8" style="min-height:180px"></select>
+      </label>
+      <label class="wide">任職備註(選填)
+        <textarea id="apptNote" placeholder="如:由禮部冊封、暫代、外戚..."></textarea>
+      </label>
+    </div>
+
+    <div class="dz-dialog-actions">
+      <button class="dz-btn" id="btnApptCancel">取消</button>
+      <button class="dz-btn dz-btn-primary" id="btnApptConfirm">確認派任</button>
+    </div>
+  </div>
+</div>
+
+<!-- ====== 編輯職銜對話框 ====== -->
+<div class="dz-dialog hidden" id="positionFormDialog">
+  <div class="dz-dialog-content">
+    <div class="dz-dialog-title" id="pfTitle">編輯職銜</div>
+
+    <div class="dz-form-grid">
+      <label>所屬分類
+        <select id="pfCategory"></select>
+      </label>
+      <label>系統／機構
+        <input id="pfSystem" placeholder="如:後宮、吏部、寧王府">
+      </label>
+      <label>職位／名分
+        <input id="pfPosition" placeholder="如:皇貴妃、尚書">
+      </label>
+      <label>位階／品級
+        <input id="pfRank" placeholder="如:正二品、妃位">
+      </label>
+      <label>定員(0=不限)
+        <input id="pfQuota" type="number" min="0" value="1">
+      </label>
+      <label class="wide">職銜備註
+        <textarea id="pfNote" placeholder="如:副后級、可空缺、由禮部冊封"></textarea>
+      </label>
+    </div>
+
+    <div class="dz-dialog-actions">
+      <button class="dz-btn" id="btnPfCancel">取消</button>
+      <button class="dz-btn dz-btn-primary" id="btnPfSave">儲存</button>
+    </div>
+  </div>
+</div>
+
+<!-- 依賴的 tome 模組 -->
+<script src="js/constants.js"></script>
+<script src="js/state.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/relations.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/time.js"></script>
+<script src="js/family.js"></script>
+<script src="js/dazhou.js"></script>
+</body>
+</html>
