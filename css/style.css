@@ -1,0 +1,1329 @@
+/* ============================================================
+   宗族之書 — 古籍版 (Tome Edition)
+   只換 CSS,不動任何 JS 邏輯
+   ============================================================ */
+
+/* ---------- 字體 ---------- */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;600;700;900&family=Ma+Shan+Zheng&display=swap');
+
+:root {
+  /* 紙與墨 */
+  --paper:        #f4ede0;        /* 主紙色:暖米白 */
+  --paper-deep:   #ebe1cf;        /* 深一階,用於分區/側邊 */
+  --paper-edge:   #d9c9a8;        /* 紙緣/裝幀色 */
+  --ink:          #2b1d12;        /* 主墨色,深棕,不是純黑 */
+  --ink-soft:     #5a4632;        /* 次要文字 */
+  --ink-faint:    #8a7355;        /* 提示/次次要 */
+  --vermilion:    #a8341e;        /* 朱砂 — 標題/印章/關鍵動作 */
+  --vermilion-deep:#7e2614;       /* 朱砂深 — hover */
+  --gold:         #8b6a2a;        /* 古銅金,輔助強調 */
+  --line:         #c9b48a;        /* 主線條色 */
+  --line-soft:    #d9c9a8;        /* 弱線 */
+
+  --radius-sm: 2px;               /* 古籍幾乎沒有大圓角 */
+  --radius-md: 4px;
+
+  --shadow-page: 0 2px 14px rgba(70, 50, 20, 0.18),
+                 0 0 0 1px var(--paper-edge);
+}
+
+/* ---------- 重設與基底 ---------- */
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Noto Serif TC", "Songti TC", "PingFang TC", serif;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--ink);
+  background:
+    /* 細微的紙紋(用兩層 radial-gradient 模擬纖維與斑點) */
+    radial-gradient(ellipse at 20% 30%, rgba(139, 106, 42, 0.04) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 70%, rgba(168, 52, 30, 0.03) 0%, transparent 50%),
+    repeating-linear-gradient(
+      0deg,
+      transparent 0px,
+      transparent 2px,
+      rgba(139, 106, 42, 0.012) 2px,
+      rgba(139, 106, 42, 0.012) 4px
+    ),
+    var(--paper);
+  min-height: 100vh;
+}
+
+/* ---------- 整體裝幀 .app — 開卷的對開書頁 ---------- */
+.app {
+  max-width: 1240px;
+  margin: 24px auto;
+  padding: 32px 36px 40px;
+  background: var(--paper);
+  position: relative;
+  /* 古籍對開書頁的雙線裝幀 */
+  border: 1px solid var(--line);
+  outline: 1px solid var(--line);
+  outline-offset: 4px;
+  box-shadow: var(--shadow-page);
+}
+
+/* 書頁四角的裝飾性「魚尾」/角花 */
+.app::before,
+.app::after {
+  content: "";
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--vermilion);
+  opacity: 0.5;
+  pointer-events: none;
+}
+.app::before {
+  top: 10px; left: 10px;
+  border-right: none; border-bottom: none;
+}
+.app::after {
+  bottom: 10px; right: 10px;
+  border-left: none; border-top: none;
+}
+
+/* ---------- 頂部 .top-bar — 題簽 + 章印 ---------- */
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+  padding-bottom: 18px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--line);
+  position: relative;
+  flex-wrap: wrap;
+}
+
+/* 題簽下面再加一條細線,雙線分隔(古籍版心) */
+.top-bar::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: -4px;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.title-block h1 {
+  margin: 0 0 6px;
+  font-family: "Noto Serif TC", serif;
+  font-weight: 900;
+  font-size: 1.9rem;
+  letter-spacing: 0.15em;
+  color: var(--ink);
+  /* 標題前一條短墨槓,像書名旁的句讀 */
+  position: relative;
+  padding-left: 18px;
+}
+.title-block h1::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 50%;
+  transform: translateY(-50%);
+  width: 6px;
+  height: 1.4em;
+  background: var(--vermilion);
+}
+
+.subtitle {
+  margin: 2px 0;
+  font-size: 0.92rem;
+  color: var(--ink-soft);
+  letter-spacing: 0.05em;
+}
+.subtitle.small {
+  font-size: 0.85rem;
+  color: var(--ink-faint);
+}
+
+/* 朱文方印 — 放在右上角,作為「宗族之書」的視覺定錨 */
+.top-bar::before {
+  content: "宗\A族\A之\A書";
+  white-space: pre;
+  position: absolute;
+  right: 0;
+  top: -8px;
+  font-family: "Ma Shan Zheng", "Noto Serif TC", serif;
+  font-size: 0.75rem;
+  line-height: 1.05;
+  color: var(--vermilion);
+  background: var(--paper);
+  border: 2px solid var(--vermilion);
+  padding: 8px 6px;
+  text-align: center;
+  letter-spacing: 0.05em;
+  /* 章印的微微歪斜 */
+  transform: rotate(-2deg);
+  box-shadow: inset 0 0 0 1px var(--vermilion);
+}
+
+.top-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+  margin-right: 70px; /* 讓出章印的位置 */
+}
+
+/* ---------- 主版心 .layout ---------- */
+.layout {
+  display: grid;
+  grid-template-columns: minmax(340px, 380px) minmax(0, 1fr);
+  gap: 24px;
+  position: relative;
+}
+
+/* 兩欄之間的版心分隔線(古籍版式) */
+.layout::before {
+  content: "";
+  position: absolute;
+  left: calc(380px + 12px);
+  top: 0; bottom: 0;
+  border-left: 1px solid var(--line-soft);
+  /* 雙線 */
+  box-shadow: 2px 0 0 -1px var(--line-soft);
+  pointer-events: none;
+}
+
+@media (max-width: 980px) {
+  .layout { grid-template-columns: 1fr; gap: 16px; }
+  .layout::before { display: none; }
+  .app { padding: 22px 18px 28px; margin: 12px; }
+}
+
+/* ---------- 卡片 .card — 一則一則的書頁段落 ---------- */
+.card {
+  background: transparent;
+  border: none;
+  border-top: 1px solid var(--line);
+  padding: 16px 4px 18px;
+  margin-bottom: 8px;
+  border-radius: 0;
+  box-shadow: none;
+  position: relative;
+}
+
+.card:first-child {
+  border-top: none;
+  padding-top: 4px;
+}
+
+/* 卡標題 — 像章節標題 */
+.card-title {
+  margin: 0 0 14px;
+  font-family: "Noto Serif TC", serif;
+  font-weight: 700;
+  font-size: 1.08rem;
+  color: var(--ink);
+  letter-spacing: 0.18em;
+  /* 標題前後的「點」,模擬古籍卷首的句讀符 */
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.card-title::before {
+  content: "◆";
+  color: var(--vermilion);
+  font-size: 0.7em;
+}
+.card-title::after {
+  content: "";
+  flex: 1;
+  border-bottom: 1px dotted var(--line);
+}
+
+/* ---------- 表單元素 — 像在紙上書寫 ---------- */
+label {
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  display: block;
+  margin-bottom: 6px;
+  letter-spacing: 0.06em;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="file"],
+select,
+textarea {
+  width: 100%;
+  padding: 8px 10px;
+  border: none;
+  border-bottom: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.35);
+  color: var(--ink);
+  font-size: 0.95rem;
+  font-family: inherit;
+  outline: none;
+  border-radius: 0;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 60px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.4);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--vermilion);
+  background: rgba(255, 255, 255, 0.6);
+  box-shadow: 0 1px 0 0 var(--vermilion);
+}
+
+/* select 箭頭重做 */
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--ink-faint) 50%),
+    linear-gradient(135deg, var(--ink-faint) 50%, transparent 50%);
+  background-position:
+    calc(100% - 14px) 50%,
+    calc(100% - 9px) 50%;
+  background-size: 5px 5px;
+  background-repeat: no-repeat;
+  padding-right: 28px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 10px;
+}
+@media (max-width: 650px) {
+  .form-row { grid-template-columns: 1fr; }
+}
+
+.small-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  align-items: center;
+}
+.small-row input { flex: 1; }
+
+.inline-input {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.inline-input input { flex: 1; }
+.inline-input span { color: var(--ink-faint); }
+
+/* ---------- 按鈕 — 木刻牌匾感 ---------- */
+.btn,
+.primary-btn,
+.secondary-btn,
+.back-btn {
+  display: inline-block;
+  padding: 7px 16px;
+  border: 1px solid var(--ink);
+  background: var(--paper);
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 0.9rem;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+  transition: all 0.15s ease;
+  box-shadow: 1px 1px 0 0 var(--ink-soft);
+}
+
+.btn:hover,
+.primary-btn:hover,
+.secondary-btn:hover,
+.back-btn:hover {
+  background: var(--ink);
+  color: var(--paper);
+  transform: translate(1px, 1px);
+  box-shadow: 0 0 0 0 var(--ink-soft);
+}
+
+.btn-primary,
+.primary-btn {
+  border-color: var(--vermilion);
+  color: var(--vermilion);
+  box-shadow: 1px 1px 0 0 var(--vermilion-deep);
+}
+.btn-primary:hover,
+.primary-btn:hover {
+  background: var(--vermilion);
+  color: var(--paper);
+}
+
+.btn-danger {
+  border-color: var(--vermilion-deep);
+  color: var(--vermilion-deep);
+}
+.btn-danger:hover {
+  background: var(--vermilion-deep);
+  color: var(--paper);
+}
+
+.btn-small {
+  font-size: 0.82rem;
+  padding: 5px 12px;
+  letter-spacing: 0.08em;
+}
+
+.btn-secondary {
+  border-style: dashed;
+}
+
+.back-btn {
+  font-size: 0.85rem;
+}
+
+.card-footer {
+  margin-top: 12px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+.button-row.right { justify-content: flex-end; }
+
+/* ---------- 列表 / 家族列表 — 像族譜條目 ---------- */
+.list {
+  max-height: 240px;
+  overflow: auto;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 0;
+}
+
+.list-item {
+  padding: 10px 12px;
+  border-bottom: 1px dotted var(--line-soft);
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 0.92rem;
+  transition: background 0.15s;
+}
+.list-item:last-child { border-bottom: none; }
+.list-item:hover {
+  background: rgba(168, 52, 30, 0.06);
+}
+.list-item.active {
+  background: rgba(168, 52, 30, 0.12);
+  box-shadow: inset 3px 0 0 0 var(--vermilion);
+}
+
+.list-main {
+  display: flex;
+  flex-direction: column;
+}
+.list-title {
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: 0.08em;
+}
+.list-sub {
+  font-size: 0.82rem;
+  color: var(--ink-faint);
+  margin-top: 2px;
+}
+
+/* ---------- 徽章 / 標籤 ---------- */
+.badge {
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line);
+  background: var(--paper);
+  color: var(--ink-soft);
+  padding: 2px 8px;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+}
+
+.pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+.pill {
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.4);
+  color: var(--ink);
+  padding: 4px 10px;
+  font-size: 0.82rem;
+  cursor: pointer;
+  letter-spacing: 0.05em;
+  transition: all 0.15s;
+}
+.pill:hover {
+  background: var(--vermilion);
+  color: var(--paper);
+  border-color: var(--vermilion);
+}
+
+/* ---------- 輔佐官對話框 — 奏摺風 ---------- */
+.log {
+  max-height: 200px;
+  overflow: auto;
+  border: 1px solid var(--line);
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0px,
+      transparent 27px,
+      rgba(139, 106, 42, 0.08) 27px,
+      rgba(139, 106, 42, 0.08) 28px
+    ),
+    rgba(255, 255, 255, 0.35);
+  padding: 10px 14px;
+  font-size: 0.92rem;
+  line-height: 1.85;
+  color: var(--ink);
+  border-radius: 0;
+}
+.log p {
+  margin: 0;
+  padding: 0;
+}
+/* 輔佐官說的話 */
+.log p:first-child { color: var(--ink); }
+
+/* ---------- 提示 ---------- */
+.hint {
+  font-size: 0.82rem;
+  color: var(--ink-faint);
+  letter-spacing: 0.04em;
+  font-style: italic;
+}
+
+/* ---------- 詳情區 ---------- */
+.detail {
+  font-size: 0.92rem;
+  color: var(--ink);
+}
+.detail-section {
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px dotted var(--line-soft);
+}
+.detail-section:last-child { border-bottom: none; }
+
+.detail-label {
+  font-size: 0.78rem;
+  color: var(--ink-faint);
+  letter-spacing: 0.08em;
+  margin-bottom: 2px;
+}
+.detail-value {
+  font-size: 0.95rem;
+  color: var(--ink);
+}
+
+/* ---------- Modal — 像折頁公文 ---------- */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(43, 29, 18, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+.modal.hidden { display: none; }
+.modal-content {
+  background: var(--paper);
+  border: 1px solid var(--ink);
+  outline: 1px solid var(--ink);
+  outline-offset: 3px;
+  padding: 24px 26px;
+  max-width: 480px;
+  width: calc(100% - 40px);
+  border-radius: 0;
+  box-shadow: 0 10px 40px rgba(43, 29, 18, 0.3);
+  position: relative;
+}
+.modal-content h3 {
+  margin: 0 0 12px;
+  font-family: "Noto Serif TC", serif;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  color: var(--vermilion);
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+}
+.modal-body {
+  font-size: 0.95rem;
+  line-height: 1.85;
+  margin-bottom: 14px;
+  color: var(--ink);
+}
+
+/* ---------- 區域概覽 ---------- */
+.region-block {
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px dotted var(--line-soft);
+}
+.region-block:last-child { border-bottom: none; }
+.region-title {
+  font-weight: 600;
+  font-size: 0.96rem;
+  color: var(--ink);
+  letter-spacing: 0.08em;
+}
+.region-sub {
+  font-size: 0.82rem;
+  color: var(--ink-faint);
+  margin-top: 2px;
+}
+
+.option-edit {
+  cursor: pointer;
+  color: var(--vermilion);
+  padding: 0 4px;
+  font-size: 0.85rem;
+}
+.option-edit:hover { text-decoration: underline; }
+
+/* ---------- 工具類 ---------- */
+.hidden { display: none !important; }
+
+/* ---------- 地圖頁專用 ---------- */
+.panel {
+  background: transparent;
+  border-top: 1px solid var(--line);
+  padding: 16px 4px;
+  margin-bottom: 8px;
+}
+.panel h2 {
+  margin: 0 0 14px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  font-size: 1.05rem;
+}
+.item-block {
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.3);
+}
+.item-block h3 {
+  margin: 0 0 6px;
+  font-size: 1rem;
+  color: var(--vermilion);
+  letter-spacing: 0.1em;
+}
+.item-block p {
+  margin: 0 0 8px;
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+}
+
+/* ---------- 捲軸樣式 ---------- */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--paper-deep);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border: 2px solid var(--paper-deep);
+  border-radius: 0;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--ink-faint);
+}
+
+/* ---------- 父母選擇浮窗(原本 inline style 的也順手覆蓋) ---------- */
+#parentSelectDialog {
+  position: fixed !important;
+  bottom: 20px !important;
+  right: 20px !important;
+  display: none;             /* 預設隱藏, JS 切成 block 顯示 */
+  max-width: 260px;
+  padding: 15px;
+  z-index: 99999;
+  background: var(--paper) !important;
+  border: 1px solid var(--ink) !important;
+  outline: 1px solid var(--ink);
+  outline-offset: 3px;
+  border-radius: 0 !important;
+  box-shadow: 0 8px 24px rgba(43, 29, 18, 0.25) !important;
+  font-family: "Noto Serif TC", serif;
+  color: var(--ink);
+}
+#parentSelectText {
+  margin-bottom: 10px;
+}
+#parentSelectButtons {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+#parentSelectDialog button {
+  font-family: inherit;
+  border: 1px solid var(--ink);
+  background: var(--paper);
+  color: var(--ink);
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  letter-spacing: 0.06em;
+}
+#parentSelectDialog button:hover {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+/* ---------- 字體應用到所有輸入元素 ---------- */
+button, input, select, textarea {
+  font-family: "Noto Serif TC", "Songti TC", "PingFang TC", serif;
+}
+
+/* ============================================================
+   修補:人物詳情區的按鈕擠成一團問題
+   原本 game.js 用 appendChild 直接平鋪 button + select,
+   沒有任何間距,在這個古籍 CSS 下會黏死。下面這段給呼吸感。
+   ============================================================ */
+
+/* 動作按鈕群:讓所有 button 用 flex gap 排列 */
+.action-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px dotted var(--line-soft);
+}
+
+/* 詳情區 select 與按鈕之間的呼吸 */
+.detail select,
+.detail input[type="text"],
+.detail input[type="number"] {
+  margin-top: 6px;
+  margin-bottom: 6px;
+}
+
+/* 詳情區裡裸 appendChild 的 button:給點上下邊距,避免黏死 */
+.detail > button,
+.detail-section > button,
+#personContent > button,
+#addSpouseBox > button,
+#personEditForm > button {
+  margin-top: 6px;
+  margin-right: 6px;
+}
+
+/* 領養子女區塊 — 上面加分隔 */
+#personContent h4,
+.detail h4 {
+  margin: 16px 0 8px;
+  padding-top: 12px;
+  border-top: 1px dotted var(--line-soft);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+  letter-spacing: 0.1em;
+}
+
+/* 詳情區裡的 select、input 與按鈕排成一行時要對齊高度 */
+.detail select,
+.detail input {
+  min-height: 36px;
+}
+
+/* 詳情區裡的小區段 - 配偶選擇、領養等小工具列 */
+.detail-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin: 8px 0;
+}
+
+
+/* ============================================================
+   v4 新增:關係列表(配偶/父母/子女分行顯示)+ 摺疊式成員列表
+   ============================================================ */
+
+/* ---------- 關係列表 — 配偶/子女/父母分行 ---------- */
+.relation-list {
+  margin-bottom: 8px;
+}
+.relation-item {
+  padding: 4px 0;
+  font-size: 0.95rem;
+  color: var(--ink);
+  line-height: 1.6;
+}
+.relation-item + .relation-item {
+  border-top: 1px dotted var(--line-soft);
+}
+.relation-label {
+  display: inline-block;
+  min-width: 2.5em;
+  color: var(--vermilion);
+  font-weight: 600;
+  margin-right: 4px;
+  letter-spacing: 0.05em;
+}
+.relation-meta {
+  color: var(--ink-faint);
+  font-size: 0.85rem;
+  margin-left: 4px;
+}
+.relation-empty {
+  color: var(--ink-faint);
+  font-size: 0.9rem;
+  font-style: italic;
+  padding: 2px 0;
+}
+
+/* ---------- 已解約/破局的婚配紀錄 ---------- */
+/* 婚事曾締結但未終成,以淡化色與灰邊呈現,玩家可一眼分辨「現役」與「歷史」配偶 */
+.relation-item.relation-dissolved {
+  opacity: 0.72;
+  position: relative;
+  padding-left: 8px;
+  border-left: 2px solid var(--ink-faint);
+}
+.relation-item.relation-dissolved .person-link {
+  border-bottom-style: dashed;
+  color: var(--ink-faint);
+}
+.relation-dissolve-note {
+  margin-top: 3px;
+  margin-left: 4px;
+  font-size: 0.82rem;
+  color: var(--ink-faint);
+  font-style: italic;
+}
+
+/* ---------- 婚姻紀錄的「過往痕跡」flag chips ---------- */
+/* 顯示在每段婚姻紀錄下方,內容由 render-person.js 的 getPairFlagsForRender 填入 */
+.relation-flags {
+  margin-top: 4px;
+  margin-left: 4px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.pair-flag-chip {
+  display: inline-block;
+  padding: 2px 8px;
+  background: #ede0c5;
+  border: 1px solid #c9b07e;
+  border-radius: 10px;
+  font-size: 0.78rem;
+  color: #4a3f33;
+  line-height: 1.4;
+}
+
+/* ---------- 人名連結 — 點擊跳轉 ---------- */
+.person-link {
+  color: var(--ink);
+  text-decoration: none;
+  border-bottom: 1px dotted var(--vermilion);
+  padding: 0 2px;
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+.person-link:hover {
+  background: rgba(168, 52, 30, 0.1);
+  color: var(--vermilion-deep);
+  border-bottom-color: var(--vermilion-deep);
+  border-bottom-style: solid;
+}
+.person-link:active {
+  background: rgba(168, 52, 30, 0.2);
+}
+
+/* ---------- 摺疊式成員列表 — <details> ---------- */
+.member-item {
+  border-top: 1px solid var(--line-soft);
+  padding: 0;
+  background: transparent;
+  /* 覆寫 details 預設樣式 */
+}
+.member-item:first-child {
+  border-top: none;
+}
+.member-item[open] {
+  background: rgba(168, 52, 30, 0.03);
+}
+.member-item.active {
+  background: rgba(168, 52, 30, 0.08);
+  box-shadow: inset 3px 0 0 0 var(--vermilion);
+}
+.member-item.deceased .member-name {
+  color: var(--ink-faint);
+}
+
+/* summary 的箭頭 — 自定義朱砂三角 */
+.member-summary {
+  padding: 10px 14px 10px 24px;
+  cursor: pointer;
+  list-style: none;          /* 移除預設三角 */
+  position: relative;
+  display: block;
+  transition: background 0.15s;
+}
+.member-summary::-webkit-details-marker {
+  display: none;             /* Safari */
+}
+.member-summary::before {
+  content: "▸";
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--vermilion);
+  font-size: 0.8rem;
+  transition: transform 0.2s ease;
+}
+.member-item[open] > .member-summary::before {
+  transform: translateY(-50%) rotate(90deg);
+}
+.member-summary:hover {
+  background: rgba(168, 52, 30, 0.06);
+}
+
+.member-name {
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--ink);
+  letter-spacing: 0.05em;
+  margin-right: 8px;
+}
+.member-info {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--ink-faint);
+  margin-top: 2px;
+  letter-spacing: 0.04em;
+}
+
+/* v7+:家族成員列表上的現任職位摘要 */
+.member-appt {
+  display: inline-block;
+  margin-top: 4px;
+  margin-left: 0;
+  padding: 2px 8px;
+  font-size: 0.78rem;
+  color: var(--vermilion);
+  background: rgba(168, 52, 30, 0.06);
+  border: 1px solid rgba(168, 52, 30, 0.25);
+  border-left: 2px solid var(--vermilion);
+  letter-spacing: 0.05em;
+  line-height: 1.5;
+}
+
+/* 展開區內容 */
+.member-body {
+  padding: 4px 14px 14px 24px;
+  border-top: 1px dotted var(--line-soft);
+  background: rgba(255, 255, 255, 0.25);
+}
+.member-relations {
+  display: grid;
+  grid-template-columns: 4em 1fr;
+  gap: 6px 12px;
+  margin-top: 6px;
+}
+.member-relations-label {
+  color: var(--ink-faint);
+  font-size: 0.82rem;
+  letter-spacing: 0.06em;
+  padding-top: 4px;
+}
+.member-relations-value {
+  font-size: 0.9rem;
+  color: var(--ink);
+}
+.member-relations-value .relation-item {
+  padding: 2px 0;
+}
+.member-relations-value .relation-item + .relation-item {
+  border-top: none;
+}
+
+/* ---------- 修改父母 modal — 內部 select 樣式調整 ---------- */
+#editParentsModal .modal-body select {
+  margin-top: 4px;
+}
+#editParentsModal .modal-body label {
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: 0.06em;
+}
+
+/* ============================================================
+   v5 新增:代數分組標題
+   ============================================================ */
+.generation-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 12px;
+  margin-top: 6px;
+  background: rgba(168, 52, 30, 0.07);   /* 朱砂極淡底色 */
+  font-family: "Noto Serif TC", serif;
+  /* 第一條分組標題前不留空 */
+}
+.generation-header:first-child {
+  margin-top: 0;
+}
+.generation-title {
+  color: var(--vermilion);
+  font-weight: 700;
+  font-size: 0.88rem;
+  letter-spacing: 0.4em;          /* 字距大一點,有刻印感 */
+  flex-shrink: 0;
+}
+.generation-rule {
+  flex: 1;
+  border-bottom: 1px dotted rgba(168, 52, 30, 0.25);
+  margin: 0 4px;
+}
+.generation-count {
+  color: var(--ink-faint);
+  font-size: 0.78rem;
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+}
+
+/* 分組標題後第一個成員不要再畫頂部 border (避免雙線) */
+.generation-header + .member-item {
+  border-top: none;
+}
+
+/* ============================================================
+   v6 新增樣式
+   ============================================================ */
+
+/* ---- 區域可展開 ---- */
+.region-block-collapsible {
+  cursor: default;
+}
+.region-block-collapsible > summary {
+  cursor: pointer;
+  list-style: none;
+  position: relative;
+  padding-right: 18px;
+}
+.region-block-collapsible > summary::-webkit-details-marker {
+  display: none;
+}
+.region-block-collapsible > summary::after {
+  content: "▸";
+  position: absolute;
+  right: 4px;
+  top: 0;
+  color: var(--ink-faint);
+  font-size: 0.75rem;
+  transition: transform 0.15s ease;
+}
+.region-block-collapsible[open] > summary::after {
+  transform: rotate(90deg);
+}
+.region-block-collapsible > summary:hover .region-title {
+  color: var(--vermilion);
+}
+.region-summary {
+  display: block;
+}
+.region-body {
+  margin-top: 8px;
+  padding: 8px 4px 4px 8px;
+  border-left: 2px solid var(--line-soft);
+}
+.region-section-label {
+  font-size: 0.78rem;
+  color: var(--ink-faint);
+  letter-spacing: 0.08em;
+  margin-top: 8px;
+  margin-bottom: 4px;
+}
+.region-section-label:first-child {
+  margin-top: 0;
+}
+.region-territory-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  margin-bottom: 4px;
+}
+.region-territory-tag {
+  font-size: 0.82rem;
+  color: var(--ink);
+  padding: 1px 6px;
+  border: 1px dotted var(--line-soft);
+  border-radius: 2px;
+  background: rgba(0,0,0,0.015);
+}
+.region-family-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.region-family-link {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+  padding: 4px 6px;
+  border-bottom: 1px dotted var(--line-soft);
+  text-decoration: none;
+  color: var(--ink);
+  transition: background 0.1s ease;
+}
+.region-family-link:last-child {
+  border-bottom: none;
+}
+.region-family-link:hover {
+  background: rgba(180, 60, 40, 0.05);
+}
+.region-family-name {
+  font-weight: 600;
+  color: var(--vermilion);
+  font-size: 0.92rem;
+}
+.region-family-meta {
+  color: var(--ink-faint);
+  font-size: 0.78rem;
+  text-align: right;
+  flex-shrink: 0;
+}
+.region-empty {
+  font-size: 0.82rem;
+  color: var(--ink-faint);
+  font-style: italic;
+  padding: 2px 4px;
+}
+
+/* ---- 家族詳情:聯姻紀錄(分組摘要) ---- */
+.marriage-summary-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.marriage-gen-line {
+  padding: 4px 0;
+  line-height: 1.9;
+  border-bottom: 1px dotted var(--line-soft);
+}
+.marriage-gen-line:last-child {
+  border-bottom: none;
+}
+.marriage-gen-label {
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: var(--ink);
+  letter-spacing: 0.08em;
+  margin-right: 6px;
+}
+.marriage-group {
+  display: inline-block;
+  vertical-align: top;
+  margin-right: 0;
+}
+.marriage-group-summary {
+  display: inline-flex;
+  align-items: baseline;
+  cursor: pointer;
+  list-style: none;
+  font-size: 0.88rem;
+  padding: 1px 2px;
+  border-radius: 2px;
+  transition: background 0.1s ease;
+}
+.marriage-group-summary::-webkit-details-marker {
+  display: none;
+}
+.marriage-group-summary:hover {
+  background: rgba(180, 60, 40, 0.06);
+}
+.marriage-group[open] > .marriage-group-summary {
+  background: rgba(180, 60, 40, 0.04);
+}
+.marriage-group-count {
+  color: var(--ink-faint);
+  font-size: 0.82rem;
+  margin-left: 2px;
+}
+.marriage-group-sep {
+  color: var(--ink-faint);
+  margin-right: 2px;
+}
+.marriage-group-detail {
+  display: block;
+  margin-top: 6px;
+  margin-bottom: 8px;
+  margin-left: 12px;
+  padding: 6px 8px;
+  border-left: 2px solid var(--line-soft);
+  background: rgba(0,0,0,0.012);
+}
+.marriage-item {
+  padding: 4px 0;
+  border-bottom: 1px dotted var(--line-soft);
+}
+.marriage-item:last-child {
+  border-bottom: none;
+}
+.marriage-line {
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+.marriage-line-meta {
+  font-size: 0.8rem;
+  color: var(--ink-faint);
+  margin-top: 2px;
+}
+.marriage-tag {
+  font-size: 0.85rem;
+  padding: 0 3px;
+  letter-spacing: 0.03em;
+}
+.marriage-tag-internal {
+  color: rgba(120, 100, 60, 0.95);
+}
+.marriage-tag-external {
+  color: var(--vermilion);
+  font-weight: 500;
+}
+.marriage-meta {
+  color: var(--ink-faint);
+  font-size: 0.8rem;
+}
+.marriage-link {
+  color: var(--ink-faint);
+}
+.marriage-status {
+  display: inline-block;
+  margin-left: 4px;
+  padding: 0 5px;
+  font-size: 0.72rem;
+  border-radius: 2px;
+  letter-spacing: 0.04em;
+}
+.marriage-status-ended {
+  background: rgba(80, 80, 80, 0.12);
+  color: rgba(80, 80, 80, 0.95);
+  border: 1px solid rgba(80, 80, 80, 0.25);
+}
+.marriage-status-pending {
+  background: rgba(180, 140, 40, 0.1);
+  color: rgba(140, 100, 30, 0.95);
+  border: 1px solid rgba(180, 140, 40, 0.3);
+}
+/* v6+:破局狀態 */
+.marriage-status-dissolved {
+  background: rgba(163, 73, 30, 0.12);
+  color: rgba(120, 50, 20, 0.95);
+  border: 1px solid rgba(163, 73, 30, 0.3);
+}
+/* v6+:曾配項目 */
+.ex-spouse-item {
+  opacity: 0.85;
+}
+.ex-spouse-item .person-link {
+  color: rgba(120, 90, 70, 0.95);
+  text-decoration: line-through wavy rgba(163, 73, 30, 0.4);
+}
+.ex-spouse-meta {
+  color: rgba(120, 50, 20, 0.85);
+  font-style: italic;
+}
+
+/* ---- 人物詳情:備註編輯 ---- */
+.btn-inline-edit {
+  margin-left: 8px;
+  font-size: 0.72rem;
+  padding: 1px 6px;
+  vertical-align: middle;
+}
+.notes-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  font-family: inherit;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  padding: 6px 8px;
+  border: 1px solid var(--line);
+  background: rgba(255, 252, 246, 0.6);
+  resize: vertical;
+  min-height: 60px;
+}
+.notes-textarea:focus {
+  outline: none;
+  border-color: var(--vermilion);
+}
+.notes-edit-actions {
+  margin-top: 6px;
+  display: flex;
+  gap: 6px;
+}
+
+/* ============================================================
+   v7+:名位卷宗 — 人物詳情頁的任職區塊樣式
+   ============================================================ */
+.appt-list {
+  list-style: none;
+  padding: 0;
+  margin: 0.3rem 0 0 0;
+}
+.appt-list > li {
+  padding: 0.4rem 0.6rem;
+  margin-bottom: 0.3rem;
+  background: rgba(255, 252, 246, 0.5);
+  border: 1px solid var(--line, rgba(107,85,48,.25));
+  border-left: 3px solid var(--vermilion, #8b2a1f);
+  font-size: 0.88rem;
+  line-height: 1.55;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+}
+.appt-list-history > li {
+  border-left-color: rgba(107,85,48,.4);
+  opacity: 0.85;
+  background: rgba(255, 252, 246, 0.3);
+}
+.appt-pos {
+  font-weight: 600;
+  color: var(--vermilion, #8b2a1f);
+}
+.appt-year {
+  font-size: 0.78rem;
+  color: var(--muted, #6a5940);
+  letter-spacing: 0.05em;
+}
+.appt-note {
+  font-style: italic;
+  color: var(--muted, #6a5940);
+  font-size: 0.82rem;
+}
