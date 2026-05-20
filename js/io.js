@@ -3,7 +3,23 @@
 
 // ---------- 匯出 / 匯入 / 重置 ----------
 function exportGame() {
-  const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+  // 直接從 localStorage 讀取最權威的資料，避免本分頁的 state 與其他分頁
+  // (議親室 / 名位卷宗) 修改後的最新狀態不同步
+  const raw = localStorage.getItem(STORAGE_KEY);
+  let payload;
+  if (raw) {
+    try {
+      // 先 parse 再 stringify 一次,確保格式整齊;若 parse 失敗就直接用原 raw
+      payload = JSON.stringify(JSON.parse(raw), null, 2);
+    } catch (e) {
+      payload = raw;
+    }
+  } else {
+    // localStorage 還沒寫入時,退回用當前 state
+    payload = JSON.stringify(state, null, 2);
+  }
+
+  const blob = new Blob([payload], { type: "application/json" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
@@ -62,8 +78,35 @@ function loadStateFromData(data) {
     if (!Array.isArray(p.appointments)) p.appointments = [];  // v7+
   });
 
-  // v7+:大周名位卷宗
-  state.positions = Array.isArray(data.positions) ? data.positions : [];
+  // v7+:大周名位卷宗 — 職銜骨架
+  if (Array.isArray(data.positions) && data.positions.length) {
+    state.positions = data.positions.map(p => ({
+      ...p,
+      note: p.note || "",
+      quota: Number(p.quota) || 0
+    }));
+  } else {
+    state.positions = (typeof buildDefaultPositions === "function")
+      ? buildDefaultPositions()
+      : [];
+  }
+  state.nextPositionId = data.nextPositionId || (
+    state.positions.length
+      ? Math.max(...state.positions.map(p => Number(p.id) || 0)) + 1
+      : 1
+  );
+
+  // v3+:年史紀錄
+  state.chronicle = Array.isArray(data.chronicle) ? data.chronicle : [];
+
+  // v6+:議親案卷紀錄與合適度資料的持久化
+  state.matchChapters = Array.isArray(data.matchChapters) ? data.matchChapters : [];
+  state.pairScores = (data.pairScores && typeof data.pairScores === "object") ? data.pairScores : {};
+
+  // v3 新增欄位:家族向後相容處理
+  state.families.forEach(f => {
+    if (!Array.isArray(f.allies)) f.allies = [];
+  });
 
   normalizeRelations();
   saveState(); // 儲存到 localStorage
@@ -99,6 +142,10 @@ function resetGame() {
   state.childModeParentId = null;
   state.gameYear = INITIAL_YEAR;
   state.positions = [];  // v7+
+  state.nextPositionId = 1;
+  state.chronicle = [];           // v3+
+  state.matchChapters = [];       // v6+:議親案卷
+  state.pairScores = {};          // v6+:合適度資料
 
   saveState();
   updateYearViews();
