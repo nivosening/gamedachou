@@ -156,7 +156,7 @@ function describePositionFor(positionId) {
   const pos = state.positions.find(x => x.id === positionId);
   if (!pos) return "(已撤銷的職位)";
   const sys = pos.system && pos.system !== pos.position ? `${pos.system}・` : "";
-  return `${sys}${pos.position}${pos.rank ? `(${pos.rank})` : ""}`;
+  return `${sys}${pos.position}`;
 }
 
 // ============================================================
@@ -242,6 +242,17 @@ function renderDazhouSections() {
     return occ.some(o => (o.person.name || "").toLowerCase().includes(kw));
   });
 
+  // 排序:依 sortKey 升序(沒設 sortKey 的排在最後,以 id 作 tie-breaker 保持穩定)
+  // 新增職銜時若沒指定 sortKey,會給一個比現有最大值 +1 的值,自動往後排。
+  function _posSortVal(p) {
+    return (typeof p.sortKey === "number") ? p.sortKey : Number.POSITIVE_INFINITY;
+  }
+  filtered.sort((a, b) => {
+    const sa = _posSortVal(a), sb = _posSortVal(b);
+    if (sa !== sb) return sa - sb;
+    return a.id - b.id;
+  });
+
   const grouped = {};
   filtered.forEach(p => {
     (grouped[p.category] = grouped[p.category] || []).push(p);
@@ -257,13 +268,43 @@ function renderDazhouSections() {
     .map(cat => {
       const arr = grouped[cat];
       const totalVac = arr.filter(p => getOccupantsOfPosition(p.id).length === 0).length;
+
+      // 在 category 內,依 system 子分組;群組順序由「該群組第一個職銜的 sortKey」決定
+      // (因為 arr 已經是 sortKey 排序後的結果,所以按出現順序記下群組即可)。
+      // 沒有 system 的職銜歸到 _none_,平鋪顯示(不加子標題)。
+      const sysOrder = [];     // 出現順序的 system key 陣列
+      const sysBuckets = {};   // sysKey -> position[]
+      arr.forEach(p => {
+        const key = p.system ? p.system : "_none_";
+        if (!sysBuckets[key]) {
+          sysBuckets[key] = [];
+          sysOrder.push(key);
+        }
+        sysBuckets[key].push(p);
+      });
+
+      const groupsHtml = sysOrder.map(sysKey => {
+        const list = sysBuckets[sysKey];
+        const cardsHtml = list.map(positionCardHtml).join("");
+        if (sysKey === "_none_") {
+          // 平鋪,不加子標題
+          return `<div class="dz-position-list">${cardsHtml}</div>`;
+        }
+        return `
+          <div class="dz-subgroup">
+            <div class="dz-subgroup-head">${_dzEsc(sysKey)}</div>
+            <div class="dz-position-list">${cardsHtml}</div>
+          </div>
+        `;
+      }).join("");
+
       return `
         <section class="dz-section">
           <div class="dz-section-head">
             <div class="dz-section-title">${_dzEsc(cat)}卷</div>
             <div class="dz-section-meta">${arr.length} 個職銜・無人在任 ${totalVac}</div>
           </div>
-          <div class="dz-position-list">${arr.map(positionCardHtml).join("")}</div>
+          ${groupsHtml}
         </section>
       `;
     }).join("");
@@ -339,6 +380,8 @@ function renderSlots(p, slotCount, occ) {
   return `
     <div class="dz-position-details">
       <div class="dz-detail-actions">
+        <button class="dz-btn dz-btn-sm" data-dz-action="move-up" data-pos-id="${p.id}">▲ 上移</button>
+        <button class="dz-btn dz-btn-sm" data-dz-action="move-down" data-pos-id="${p.id}">▼ 下移</button>
         <button class="dz-btn dz-btn-sm" data-dz-action="edit-pos" data-pos-id="${p.id}">編輯職銜</button>
         <button class="dz-btn dz-btn-sm dz-btn-danger" data-dz-action="delete-pos" data-pos-id="${p.id}">刪除職銜</button>
       </div>
@@ -422,7 +465,58 @@ function handleDazhouAction(action, { posId, personId, slot }) {
     case "jump-person":
       jumpToPerson(personId);
       break;
+    case "move-up":
+      movePositionInOrder(posId, -1);
+      break;
+    case "move-down":
+      movePositionInOrder(posId, +1);
+      break;
   }
+}
+
+// ---------- 順序調整 ----------
+// dir = -1 上移、+1 下移
+// 規則:
+//   - 只在同 category + 同 system(含「無 system」)範圍內互換
+//   - 互換的是 sortKey 值;若兩者都沒 sortKey,先依目前出現順序補齊 sortKey 再交換
+function movePositionInOrder(posId, dir) {
+  const target = state.positions.find(p => p.id === posId);
+  if (!target) return;
+
+  // 先確保所有同 category 內職銜都有 sortKey,沒有的依出現順序補上,
+  // 數值取目前最大值往後遞增,避免動到既有順序。
+  const sameCat = state.positions.filter(p => p.category === target.category);
+  let maxKey = -Infinity;
+  sameCat.forEach(p => {
+    if (typeof p.sortKey === "number" && p.sortKey > maxKey) maxKey = p.sortKey;
+  });
+  if (maxKey === -Infinity) maxKey = 0;
+  sameCat.forEach(p => {
+    if (typeof p.sortKey !== "number") {
+      maxKey += 1;
+      p.sortKey = maxKey;
+    }
+  });
+
+  // 同 category + 同 system(含「皆無」當作一組)的鄰居,按 sortKey 排序
+  const sysKey = target.system || "";
+  const peers = sameCat
+    .filter(p => (p.system || "") === sysKey)
+    .sort((a, b) => a.sortKey - b.sortKey);
+
+  const idx = peers.findIndex(p => p.id === posId);
+  if (idx < 0) return;
+  const newIdx = idx + dir;
+  if (newIdx < 0 || newIdx >= peers.length) return; // 已在邊界
+
+  const other = peers[newIdx];
+  // 交換 sortKey
+  const tmp = target.sortKey;
+  target.sortKey = other.sortKey;
+  other.sortKey = tmp;
+
+  saveState();
+  renderDazhouSections();
 }
 
 // ---------- 跳轉回 tome ----------
@@ -556,7 +650,15 @@ function savePositionForm() {
     const pos = state.positions.find(x => x.id === editingId);
     if (pos) Object.assign(pos, data);
   } else {
-    state.positions.push({ id: state.nextPositionId++, ...data });
+    // 新增時自動指派 sortKey,使其排在同 category 的末尾,
+    // 避免新職銜永遠落在「無 sortKey」的最後群組之內無法排序。
+    let maxKey = 0;
+    state.positions.forEach(p => {
+      if (p.category === data.category && typeof p.sortKey === "number" && p.sortKey > maxKey) {
+        maxKey = p.sortKey;
+      }
+    });
+    state.positions.push({ id: state.nextPositionId++, sortKey: maxKey + 1, ...data });
   }
   saveState();
   closePositionForm();

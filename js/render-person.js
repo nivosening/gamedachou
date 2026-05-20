@@ -325,7 +325,10 @@ function renderPersonDetail() {
 
     const active = getActiveAppointments(p.id);
     const all = Array.isArray(p.appointments) ? p.appointments : [];
-    const history = all.filter(a => a.endYear);
+    // history 保留原始 index,以便刪除時精準定位到 p.appointments 中的那一筆
+    const history = all
+      .map((a, i) => ({ a, origIdx: i }))
+      .filter(x => x.a.endYear);
 
     let html = `<h3 class="section-title">名位 / 任職</h3>`;
 
@@ -347,11 +350,12 @@ function renderPersonDetail() {
       }
       if (history.length) {
         html += `<div class="detail-value" style="margin-top:.6rem;"><strong>歷任</strong></div><ul class="appt-list appt-list-history">`;
-        history.forEach(a => {
+        history.forEach(({ a, origIdx }) => {
           html += `<li>
             <span class="appt-pos">${escapeHtml(describePositionFor(a.positionId))}</span>
             <span class="appt-year">${a.startYear || '?'} — ${a.endYear || '?'}</span>
             ${a.note ? `<span class="appt-note">— ${escapeHtml(a.note)}</span>` : ''}
+            <button class="btn btn-small" data-appt-action="delete-history" data-history-idx="${origIdx}">刪除</button>
           </li>`;
         });
         html += `</ul>`;
@@ -408,6 +412,24 @@ function renderPersonDetail() {
           }
           appt.startYear = y;
         }
+        saveState();
+        renderPersonDetail();
+      });
+    });
+
+    // 綁定「刪除歷任」按鈕:二次確認後從 p.appointments 移除該筆
+    apptBox.querySelectorAll("[data-appt-action='delete-history']").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const idx = Number(btn.dataset.historyIdx);
+        const appt = (p.appointments || [])[idx];
+        if (!appt) return;
+        const desc = describePositionFor(appt.positionId);
+        const yrLabel = `${appt.startYear || '?'} — ${appt.endYear || '?'}`;
+        // 第一次確認
+        if (!confirm(`確定刪除「${p.name}」的歷任紀錄?\n${desc}(${yrLabel})`)) return;
+        // 第二次確認
+        if (!confirm(`此操作無法復原,真的要刪除嗎?`)) return;
+        p.appointments.splice(idx, 1);
         saveState();
         renderPersonDetail();
       });
