@@ -3,6 +3,21 @@
 
 // ---------- 列表與詳情 ----------
 
+// 取得家族顯示名:從 notes 首段抽「XX{姓}氏」,顯示為「{姓}氏({郡名})」;
+// 抽不到時只顯示「{姓}氏」(無括號)
+function getFamilyDisplayName(f) {
+  if (!f) return "";
+  const fallback = `${f.name}氏`;
+  if (!f.notes) return fallback;
+  const firstSeg = f.notes.split(/[。，,.]/)[0] || "";
+  // 抓「(1-3 字郡名)+(本姓)+氏」,只擷取郡名部分
+  const re = new RegExp(`^\\s*(.{1,3})${f.name}氏`);
+  const m = firstSeg.match(re);
+  if (!m) return fallback;
+  const county = (m[1] || "").trim();
+  return county ? `${f.name}氏（${county}）` : fallback;
+}
+
 function getStroke(ch) {
   return STROKE_TABLE[ch] ?? 99;
 }
@@ -140,17 +155,7 @@ function renderFamilies() {
 
         const t = document.createElement("div");
         t.className = "list-title";
-        // 從備註首句抽郡望(如「琅琊王氏」),抽不到退回「姓+氏」
-        // 規則:只看 notes 的第一段(到第一個句點/逗點為止),抓「XX{姓}氏」
-        let title = `${f.name}氏`;
-        if (f.notes) {
-          const firstSeg = f.notes.split(/[。，,.]/)[0] || "";
-          // 配對:任意 1-3 字 + 本族姓氏 + 氏,且要出現在首段開頭(允許前面有空白)
-          const re = new RegExp(`^\\s*(.{1,3}${f.name}氏)`);
-          const m = firstSeg.match(re);
-          if (m) title = m[1];
-        }
-        t.textContent = title;
+        t.textContent = getFamilyDisplayName(f);
 
         const s = document.createElement("div");
         s.className = "list-sub";
@@ -330,7 +335,7 @@ function renderFamilyDetail() {
 
   const title = document.createElement("h2");
   title.className = "detail-title";
-  title.textContent = f.name;
+  title.textContent = getFamilyDisplayName(f);
   box.appendChild(title);
 
   const info = document.createElement("div");
@@ -851,9 +856,74 @@ function renderFamilyDetail() {
     <div class="detail-label">快速行動</div>
     <div class="detail-value">
       <button class="btn btn-small" onclick="state.selectedFamilyId=null;renderFamilies();renderFamilyDetail();advisorSay('已關閉家族詳情。');">關閉詳情</button>
+      <button class="btn btn-small" onclick="openFamilyEditForm(${f.id});">編輯家族</button>
       <button class="btn btn-small btn-danger" onclick="deleteFamily(${f.id});">刪除家族記錄</button>
     </div>
   `;
   box.appendChild(actionBlock);
 }
 
+
+// ---------- v8:編輯家族(姓氏+備註) ----------
+// 在「家族詳情」面板原地展開編輯表單,儲存後才寫入 state。
+// 姓氏改動不會連動成員姓名(維持原本「率雲笙」這類記錄);
+// 備註改動會影響「郡望」顯示(郡望由 notes 首段自動推),
+// 因此儲存後會重新渲染家族列表、家族詳情、區域總覽。
+function openFamilyEditForm(familyId) {
+  const f = state.families.find(x => x.id === familyId);
+  if (!f) {
+    if (typeof advisorSay === "function") advisorSay("此家族已不存在,無法編輯。");
+    return;
+  }
+  const box = $("familyDetail");
+  if (!box) return;
+
+  // 避免重複展開:若已有編輯表單,先移除
+  const existing = document.getElementById("familyEditFormBox");
+  if (existing) existing.remove();
+
+  const formBox = document.createElement("div");
+  formBox.id = "familyEditFormBox";
+  formBox.className = "detail-section";
+  formBox.style.marginTop = "10px";
+  formBox.style.padding = "10px";
+  formBox.style.border = "1px dashed #b8a989";
+  formBox.style.borderRadius = "6px";
+
+  formBox.innerHTML = `
+    <div class="detail-label" style="margin-bottom:8px;">編輯家族</div>
+    <label style="display:block; margin-bottom:8px;">姓氏
+      <input type="text" id="famEditName" value="${escapeHtml(f.name)}" style="width:100%;" />
+    </label>
+    <label style="display:block; margin-bottom:8px;">備註(首句寫「XX${escapeHtml(f.name)}氏」會自動顯示為郡望)
+      <textarea id="famEditNotes" rows="4" style="width:100%;">${escapeHtml(f.notes || "")}</textarea>
+    </label>
+    <div class="button-row">
+      <button type="button" class="btn btn-small btn-primary" id="famEditSaveBtn">儲存</button>
+      <button type="button" class="btn btn-small" id="famEditCancelBtn">取消</button>
+    </div>
+  `;
+  box.appendChild(formBox);
+
+  document.getElementById("famEditCancelBtn").addEventListener("click", () => {
+    formBox.remove();
+  });
+
+  document.getElementById("famEditSaveBtn").addEventListener("click", () => {
+    const newName = ($("famEditName").value || "").trim();
+    const newNotes = ($("famEditNotes").value || "").trim();
+    if (!newName) {
+      alert("姓氏不可為空。");
+      return;
+    }
+    f.name = newName;
+    f.notes = newNotes;
+    if (typeof saveState === "function") saveState();
+    if (typeof renderFamilies === "function") renderFamilies();
+    if (typeof renderFamilyDetail === "function") renderFamilyDetail();
+    if (typeof renderRegions === "function") renderRegions();
+    if (typeof advisorSay === "function") {
+      advisorSay(`已更新「${getFamilyDisplayName(f)}」的姓氏與備註。`);
+    }
+  });
+}
