@@ -339,6 +339,7 @@ function renderPersonDetail() {
             <span class="appt-pos">${escapeHtml(describePositionFor(a.positionId))}</span>
             ${a.startYear ? `<span class="appt-year">就任於星曆 ${a.startYear} 年</span>` : ''}
             ${a.note ? `<span class="appt-note">— ${escapeHtml(a.note)}</span>` : ''}
+            <button class="btn btn-small" data-appt-action="edit-start" data-pos="${a.positionId}" data-slot="${a.slotIndex ?? ''}">改就任年</button>
             <button class="btn btn-small" data-appt-action="dismiss" data-pos="${a.positionId}" data-slot="${a.slotIndex ?? ''}">卸任</button>
           </li>`;
         });
@@ -374,6 +375,40 @@ function renderPersonDetail() {
         const desc = describePositionFor(posId);
         if (!confirm(`確定將「${p.name}」從「${desc}」卸任?`)) return;
         dismissPerson(p.id, posId, slot);
+        renderPersonDetail();
+      });
+    });
+
+    // 綁定「改就任年」按鈕:允許修改就任日期或留空(留空則不顯示)
+    apptBox.querySelectorAll("[data-appt-action='edit-start']").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const posId = Number(btn.dataset.pos);
+        const slot = btn.dataset.slot === "" ? null : Number(btn.dataset.slot);
+        // 找到對應的 appointment
+        const appt = (p.appointments || []).find(a =>
+          a.positionId === posId &&
+          !a.endYear &&
+          (slot === null || a.slotIndex === slot)
+        );
+        if (!appt) return;
+        const desc = describePositionFor(posId);
+        const input = prompt(
+          `修改「${p.name}」就任「${desc}」的年份:\n(輸入數字為新年份,留空則不顯示就任日期)`,
+          appt.startYear ?? ""
+        );
+        if (input === null) return;
+        const trimmed = String(input).trim();
+        if (trimmed === "") {
+          appt.startYear = null;
+        } else {
+          const y = Number(trimmed);
+          if (isNaN(y)) {
+            alert("就任年份請輸入數字,或留空清除。");
+            return;
+          }
+          appt.startYear = y;
+        }
+        saveState();
         renderPersonDetail();
       });
     });
@@ -597,7 +632,9 @@ actions.appendChild(editBirthBtn);
     promptBox.style.borderRadius = "6px";
 
     // 名分可選項
-    const TYPES = ["訂婚", "平妻", "妾", "繼室", "入贅"];
+    // 「婚配」為正妻/夫的標準名分(與 match.js 一致),放第一位作為預設。
+    // 「訂婚」為特殊狀態,放最後。
+    const TYPES = ["婚配", "平妻", "繼室", "妾", "入贅", "訂婚"];
 
     promptBox.innerHTML = `
       <p style="margin:0 0 8px;"><strong>修改「${p.name}」的婚姻紀錄</strong></p>
@@ -612,11 +649,17 @@ actions.appendChild(editBirthBtn);
     const typeSel = promptBox.querySelector("#emTypeSel");
 
     // 填充配偶選單
+    // 顯示規則:有年份就顯示「星曆 X 年」,沒有年份就只顯示名分,
+    // 不再硬寫「未成婚」(避免婚配無年份時被誤標)。
     spouses.forEach(sp => {
       const rel = p.spouseRelations.find(r => r.id === sp.id);
+      // 結婚年份相容舊資料:優先讀 marryYear,fallback 到 year
+      const yr = rel?.marryYear ?? rel?.year;
+      const type = rel?.type || "未記";
+      const yearPart = yr ? `・星曆 ${yr} 年` : "";
       const opt = document.createElement("option");
       opt.value = String(sp.id);
-      opt.textContent = `${sp.name}(${rel?.type || "未記"}・${rel?.marryYear ? "星曆 " + rel.marryYear + " 年" : "未成婚"})`;
+      opt.textContent = `${sp.name}(${type}${yearPart})`;
       spSel.appendChild(opt);
     });
 
@@ -633,8 +676,9 @@ actions.appendChild(editBirthBtn);
       const sId = Number(spSel.value);
       const rel = p.spouseRelations.find(r => r.id === sId);
       if (rel) {
-        yearInput.value = rel.marryYear ?? "";
-        typeSel.value = TYPES.includes(rel.type) ? rel.type : "平妻";
+        // 結婚年份相容舊資料:優先讀 marryYear,fallback 到 year
+        yearInput.value = rel.marryYear ?? rel.year ?? "";
+        typeSel.value = TYPES.includes(rel.type) ? rel.type : "婚配";
       }
     }
     fillFromSelected();
@@ -663,16 +707,16 @@ actions.appendChild(editBirthBtn);
           alert("結婚年份請輸入數字。");
           return;
         }
-        if (rA) rA.marryYear = yr;
-        if (rB) rB.marryYear = yr;
+        if (rA) { rA.marryYear = yr; delete rA.year; }
+        if (rB) { rB.marryYear = yr; delete rB.year; }
         // 若有 marryYear 則 matchStage 自動設為已婚
         if (rA) rA.matchStage = "已婚";
         if (rB) rB.matchStage = "已婚";
         changes.push(`結婚年份改為星曆 ${yr} 年`);
       } else {
         // 留空 = 解除已婚標記,改為未成婚(訂婚狀態)
-        if (rA) { rA.marryYear = null; rA.matchStage = "已定親"; }
-        if (rB) { rB.marryYear = null; rB.matchStage = "已定親"; }
+        if (rA) { rA.marryYear = null; rA.matchStage = "已定親"; delete rA.year; }
+        if (rB) { rB.marryYear = null; rB.matchStage = "已定親"; delete rB.year; }
         changes.push("結婚年份留空(視為未成婚/訂婚狀態)");
       }
 
@@ -843,34 +887,34 @@ if (!p.spouseIds.includes(spId)) p.spouseIds.push(spId);
 if (!sp.spouseIds.includes(p.id)) sp.spouseIds.push(p.id);
 
 // 更新 spouseRelations
+// 注意:欄位名稱統一用 marryYear(與議親室/修改對話框一致),
+// 並依是否有結婚年份設定 matchStage。
+const stage = marryYear != null ? "已婚" : "已定親";
+
 let pRel = p.spouseRelations.find(r => r.id === spId);
 if (!pRel) {
-  pRel = { id: spId, type: relType, year: marryYear };
+  pRel = { id: spId, type: relType, marryYear: marryYear, matchStage: stage };
   p.spouseRelations.push(pRel);
 } else {
   pRel.type = relType;
-  pRel.year = marryYear;
+  pRel.marryYear = marryYear;
+  pRel.matchStage = stage;
 }
 
 let spRel = sp.spouseRelations.find(r => r.id === p.id);
 if (!spRel) {
-  spRel = { id: p.id, type: relType, year: marryYear };
+  spRel = { id: p.id, type: relType, marryYear: marryYear, matchStage: stage };
   sp.spouseRelations.push(spRel);
 } else {
   spRel.type = relType;
-  spRel.year = marryYear;
+  spRel.marryYear = marryYear;
+  spRel.matchStage = stage;
 }
 
 saveState();
 renderPersonDetail();
 renderFamilyDetail();
 advisorSay(`已為「${p.name}」與「${sp.name}」訂下婚約（${relType}），結婚年份：${marryYear ?? "未記載"}。`);
-
-
-    saveState();
-    renderPersonDetail();
-    renderFamilyDetail();
-    advisorSay(`已為「${p.name}」與「${sp.name}」訂下婚約（${relType}）。`);
   });
 
   actions.appendChild(renameBtn);
