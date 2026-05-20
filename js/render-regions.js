@@ -79,27 +79,70 @@ function renderRegions() {
     if (families.length) {
       const famList = document.createElement("div");
       famList.className = "region-family-list";
+
+      // v8:按 originOptions 順序分組,組內按姓氏首字筆畫排序
+      // originOptions 之外或無出身的歸到「其他」尾組
+      const originOrder = state.originOptions || [];
+      const groups = new Map();          // originName → 家族陣列
+      originOrder.forEach(o => groups.set(o, []));
+      const otherGroup = [];
+
       families.forEach(f => {
-        const memberCount = state.persons.filter(p => p.familyId === f.id).length;
-        const link = document.createElement("a");
-        link.href = "#";
-        link.className = "region-family-link";
-        const terrText = f.territory ? `｜${f.territory}` : "";
-        // v8:顯示郡望(若 render-list.js 已載入則使用共用函式,
-        // 否則退回純「姓+氏」)
-        const displayName = (typeof getFamilyDisplayName === "function")
-          ? getFamilyDisplayName(f)
-          : `${f.name}氏`;
-        link.innerHTML = `
-          <span class="region-family-name">${displayName}</span>
-          <span class="region-family-meta">${f.origin || "出身未明"}${terrText}｜${memberCount} 人</span>
-        `;
-        link.addEventListener("click", (e) => {
-          e.preventDefault();
-          goToFamily(f.id);
-        });
-        famList.appendChild(link);
+        const o = f.origin;
+        if (o && groups.has(o)) groups.get(o).push(f);
+        else otherGroup.push(f);
       });
+
+      // 依筆畫排序的 helper(對齊 render-list.js 的 getStroke)
+      const strokeSort = (a, b) => {
+        const sa = (typeof getStroke === "function") ? getStroke(a.name[0]) : 99;
+        const sb = (typeof getStroke === "function") ? getStroke(b.name[0]) : 99;
+        if (sa !== sb) return sa - sb;
+        return a.name.localeCompare(b.name, "zh-Hant");
+      };
+
+      // 組出最終排序清單(同時保留分組標頭資訊)
+      const sortedSections = [];
+      originOrder.forEach(o => {
+        const arr = groups.get(o);
+        if (arr && arr.length) {
+          sortedSections.push({ origin: o, families: arr.slice().sort(strokeSort) });
+        }
+      });
+      if (otherGroup.length) {
+        sortedSections.push({ origin: "其他", families: otherGroup.slice().sort(strokeSort) });
+      }
+
+      sortedSections.forEach(section => {
+        // 出身小標
+        const groupLabel = document.createElement("div");
+        groupLabel.className = "region-origin-group-label";
+        groupLabel.textContent = section.origin;
+        famList.appendChild(groupLabel);
+
+        section.families.forEach(f => {
+          const memberCount = state.persons.filter(p => p.familyId === f.id).length;
+          const link = document.createElement("a");
+          link.href = "#";
+          link.className = "region-family-link";
+          const metaParts = [];
+          if (f.territory) metaParts.push(f.territory);
+          metaParts.push(`${memberCount} 人`);
+          const displayName = (typeof getFamilyDisplayName === "function")
+            ? getFamilyDisplayName(f)
+            : `${f.name}氏`;
+          link.innerHTML = `
+            <span class="region-family-name">${displayName}</span>
+            <span class="region-family-meta">${metaParts.join("｜")}</span>
+          `;
+          link.addEventListener("click", (e) => {
+            e.preventDefault();
+            goToFamily(f.id);
+          });
+          famList.appendChild(link);
+        });
+      });
+
       body.appendChild(famList);
     } else {
       const empty = document.createElement("div");

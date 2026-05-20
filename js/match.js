@@ -1454,9 +1454,12 @@ function poolByFamilyFilter(famFilter) {
 
 function renderFamilyFilters() {
   const fams = state.families || [];
+  const displayName = (typeof getFamilyDisplayName === "function")
+    ? getFamilyDisplayName
+    : (f => f.name);
   const options = [
     `<option value="all">全部家族</option>`,
-    ...fams.map(f => `<option value="${f.id}">${f.name}</option>`),
+    ...fams.map(f => `<option value="${f.id}">${displayName(f)}</option>`),
     `<option value="noFamily">未歸宗族</option>`
   ].join("");
   const aSel = _$("aFamilyFilter");

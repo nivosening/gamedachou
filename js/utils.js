@@ -34,6 +34,21 @@ function getRegionName(id) {
   const r = state.regions.find(r => r.id === id);
   return r ? r.name : "";
 }
+
+// 取得家族顯示名:從 notes 首段抽「XX{姓}氏」,顯示為「{姓}氏({郡名})」;
+// 抽不到時只顯示「{姓}氏」(無括號)
+// 注意:此函式只用於「顯示」,所有篩選 / 比對 key 仍應用 f.name 或 f.id。
+function getFamilyDisplayName(f) {
+  if (!f) return "";
+  const fallback = `${f.name}氏`;
+  if (!f.notes) return fallback;
+  const firstSeg = f.notes.split(/[。，,.]/)[0] || "";
+  const re = new RegExp(`^\\s*(.{1,3})${f.name}氏`);
+  const m = firstSeg.match(re);
+  if (!m) return fallback;
+  const county = (m[1] || "").trim();
+  return county ? `${f.name}氏（${county}）` : fallback;
+}
 function getTerritoryObj(name) {
   if (!name) return null;
   return state.territoryOptions.find(t => t.name === name) || null;

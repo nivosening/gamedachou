@@ -3,20 +3,7 @@
 
 // ---------- 列表與詳情 ----------
 
-// 取得家族顯示名:從 notes 首段抽「XX{姓}氏」,顯示為「{姓}氏({郡名})」;
-// 抽不到時只顯示「{姓}氏」(無括號)
-function getFamilyDisplayName(f) {
-  if (!f) return "";
-  const fallback = `${f.name}氏`;
-  if (!f.notes) return fallback;
-  const firstSeg = f.notes.split(/[。，,.]/)[0] || "";
-  // 抓「(1-3 字郡名)+(本姓)+氏」,只擷取郡名部分
-  const re = new RegExp(`^\\s*(.{1,3})${f.name}氏`);
-  const m = firstSeg.match(re);
-  if (!m) return fallback;
-  const county = (m[1] || "").trim();
-  return county ? `${f.name}氏（${county}）` : fallback;
-}
+// getFamilyDisplayName 已搬到 utils.js,所有頁面共用。
 
 function getStroke(ch) {
   return STROKE_TABLE[ch] ?? 99;

@@ -819,7 +819,11 @@ actions.appendChild(motherBtn);
   optNone.value = "none"; optNone.textContent = "未歸宗族"; famSel.appendChild(optNone);
   state.families.forEach(f => {
     const opt = document.createElement("option");
-    opt.value = String(f.id); opt.textContent = f.name; famSel.appendChild(opt);
+    opt.value = String(f.id);
+    opt.textContent = (typeof getFamilyDisplayName === "function")
+      ? getFamilyDisplayName(f)
+      : f.name;
+    famSel.appendChild(opt);
   });
 
   const famBtn = document.createElement("button");
@@ -847,7 +851,11 @@ actions.appendChild(motherBtn);
   sf0.value = ""; sf0.textContent = "配偶所屬家族"; spouseFamSel.appendChild(sf0);
   state.families.forEach(f => {
     const opt = document.createElement("option");
-    opt.value = String(f.id); opt.textContent = f.name; spouseFamSel.appendChild(opt);
+    opt.value = String(f.id);
+    opt.textContent = (typeof getFamilyDisplayName === "function")
+      ? getFamilyDisplayName(f)
+      : f.name;
+    spouseFamSel.appendChild(opt);
   });
 
   const spouseSel = document.createElement("select");
@@ -1053,7 +1061,11 @@ function renderAdoptChildUi(person) {
   fam0.value = ""; fam0.textContent = "選擇子女所屬家族（可不選）"; famSel.appendChild(fam0);
   state.families.forEach(f => {
       const opt = document.createElement("option");
-      opt.value = String(f.id); opt.textContent = f.name; famSel.appendChild(opt);
+      opt.value = String(f.id);
+      opt.textContent = (typeof getFamilyDisplayName === "function")
+        ? getFamilyDisplayName(f)
+        : f.name;
+      famSel.appendChild(opt);
   });
   box.appendChild(famSel);
 

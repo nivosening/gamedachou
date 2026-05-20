@@ -43,7 +43,9 @@ function renderFamilyOptions() {
   state.families.forEach(f => {
     const opt = document.createElement("option");
     opt.value = String(f.id);
-    opt.textContent = f.name;
+    opt.textContent = (typeof getFamilyDisplayName === "function")
+      ? getFamilyDisplayName(f)
+      : f.name;
     sel.appendChild(opt);
   });
 }
