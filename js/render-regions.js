@@ -85,8 +85,13 @@ function renderRegions() {
         link.href = "#";
         link.className = "region-family-link";
         const terrText = f.territory ? `｜${f.territory}` : "";
+        // v8:顯示郡望(若 render-list.js 已載入則使用共用函式,
+        // 否則退回純「姓+氏」)
+        const displayName = (typeof getFamilyDisplayName === "function")
+          ? getFamilyDisplayName(f)
+          : `${f.name}氏`;
         link.innerHTML = `
-          <span class="region-family-name">${f.name}</span>
+          <span class="region-family-name">${displayName}</span>
           <span class="region-family-meta">${f.origin || "出身未明"}${terrText}｜${memberCount} 人</span>
         `;
         link.addEventListener("click", (e) => {
@@ -124,5 +129,10 @@ function goToFamily(familyId) {
   if (detailEl && detailEl.scrollIntoView) {
     detailEl.scrollIntoView({ behavior: "smooth", block: "start" });
   }
-  if (typeof advisorSay === "function") advisorSay(`已開啟「${f.name}」的家族詳情。`);
+  if (typeof advisorSay === "function") {
+    const displayName = (typeof getFamilyDisplayName === "function")
+      ? getFamilyDisplayName(f)
+      : `${f.name}氏`;
+    advisorSay(`已開啟「${displayName}」的家族詳情。`);
+  }
 }
