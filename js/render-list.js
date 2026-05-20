@@ -140,11 +140,21 @@ function renderFamilies() {
 
         const t = document.createElement("div");
         t.className = "list-title";
-        t.textContent = f.name;
+        // 從備註首句抽郡望(如「琅琊王氏」),抽不到退回「姓+氏」
+        // 規則:只看 notes 的第一段(到第一個句點/逗點為止),抓「XX{姓}氏」
+        let title = `${f.name}氏`;
+        if (f.notes) {
+          const firstSeg = f.notes.split(/[。，,.]/)[0] || "";
+          // 配對:任意 1-3 字 + 本族姓氏 + 氏,且要出現在首段開頭(允許前面有空白)
+          const re = new RegExp(`^\\s*(.{1,3}${f.name}氏)`);
+          const m = firstSeg.match(re);
+          if (m) title = m[1];
+        }
+        t.textContent = title;
 
         const s = document.createElement("div");
         s.className = "list-sub";
-        s.textContent = `${getRegionName(f.regionId) || "區域未定"}｜成員 ${members.length}（在世 ${alive}／已逝 ${dead}）`;
+        s.textContent = `成員 ${members.length}（在世 ${alive}／已逝 ${dead}）`;
 
         main.appendChild(t);
         main.appendChild(s);
