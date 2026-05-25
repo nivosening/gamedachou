@@ -19,13 +19,84 @@ function buildDefaultPositions() {
   }));
 }
 
+// 依最新 DEFAULT_POSITIONS 自動補齊舊存檔缺少的職銜。
+// 這只補「職銜骨架」，不會刪除使用者手動新增的職位，也不會清除人物任職紀錄。
+function getPositionKey(p) {
+  return [
+    p.category || "",
+    p.system || "",
+    p.position || "",
+    p.rank || ""
+  ].join("｜");
+}
+
+// 早期版本只有「女官」分類；新版依 DaChouLaw2 拆成「前朝女官」與「後宮女官」。
+function normalizePositionCategory(p) {
+  if (!p || p.category !== "女官") return p;
+
+  const text = [p.system || "", p.position || "", p.note || ""].join(" ");
+  const palaceKeywords = [
+    "尚宮", "尚儀", "尚服", "尚食", "尚寢", "尚功", "尚藥",
+    "典儀", "典服", "典膳", "典寢", "典功", "典藥",
+    "掌儀", "掌服", "掌膳", "掌寢", "掌藥",
+    "宮正", "司籍", "司珍", "司苑",
+    "司記", "司帳", "司燈", "司衣",
+    "內廷", "後宮", "宮學"
+  ];
+
+  p.category = palaceKeywords.some(k => text.includes(k)) ? "後宮女官" : "前朝女官";
+  return p;
+}
+
+function syncDefaultPositions() {
+  if (!Array.isArray(state.positions)) state.positions = [];
+
+  state.positions = state.positions.map(p => normalizePositionCategory({
+    ...p,
+    note: p.note || "",
+    quota: Number(p.quota) || 0
+  }));
+
+  let nextId = state.positions.length
+    ? Math.max(...state.positions.map(p => Number(p.id) || 0)) + 1
+    : 1;
+
+  const byKey = new Map();
+  state.positions.forEach(p => byKey.set(getPositionKey(p), p));
+
+  buildDefaultPositions().forEach(defaultPos => {
+    defaultPos = normalizePositionCategory(defaultPos);
+    const key = getPositionKey(defaultPos);
+    const existing = byKey.get(key);
+
+    if (!existing) {
+      const added = { ...defaultPos, id: nextId++ };
+      state.positions.push(added);
+      byKey.set(key, added);
+      return;
+    }
+
+    // 僅補空欄位，避免覆蓋使用者自行編輯過的職銜資料。
+    if (!existing.note && defaultPos.note) existing.note = defaultPos.note;
+    if (!existing.rank && defaultPos.rank) existing.rank = defaultPos.rank;
+    if (!existing.system && defaultPos.system) existing.system = defaultPos.system;
+    if ((existing.quota == null || existing.quota === "") && defaultPos.quota != null) {
+      existing.quota = Number(defaultPos.quota) || 0;
+    }
+  });
+
+  state.nextPositionId = state.positions.length
+    ? Math.max(...state.positions.map(p => Number(p.id) || 0)) + 1
+    : 1;
+}
+
 function loadState() {
   const raw = localStorage.getItem(STORAGE_KEY);
 
   // 首次開啟:植入預設職銜骨架,讓大周頁面一開就有完整名分制度
   if (!raw) {
     state.positions = buildDefaultPositions();
-    state.nextPositionId = state.positions.length + 1;
+    syncDefaultPositions();
     return;
   }
 
@@ -90,11 +161,9 @@ function loadState() {
     } else {
       state.positions = buildDefaultPositions();
     }
-    state.nextPositionId = data.nextPositionId || (
-      state.positions.length
-        ? Math.max(...state.positions.map(p => Number(p.id) || 0)) + 1
-        : 1
-    );
+
+    // 依最新制度自動補齊缺少的職銜，並把舊「女官」分類拆回前朝/後宮女官。
+    syncDefaultPositions();
 
     normalizeRelations();
   } catch (e) {
