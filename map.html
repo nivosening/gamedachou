@@ -5,6 +5,160 @@
   <title>世界地圖系統</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="css/style.css" />
+  <style>
+    /* 地圖頁專用的輕量樣式(避免動到共用 style.css) */
+    .map-region {
+      border: 1px solid #cfbea0;
+      border-radius: 6px;
+      margin-bottom: 12px;
+      background: #fdf8ee;
+    }
+    .map-region > summary {
+      padding: 10px 14px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 1.05em;
+      list-style: none;
+    }
+    .map-region > summary::-webkit-details-marker { display: none; }
+    .map-region > summary::before {
+      content: "▶";
+      display: inline-block;
+      margin-right: 8px;
+      transition: transform 0.15s;
+      color: #a68d60;
+      font-size: 0.8em;
+    }
+    .map-region[open] > summary::before { transform: rotate(90deg); }
+    .map-region-desc {
+      font-weight: normal;
+      color: #8a7656;
+      font-size: 0.88em;
+      margin-left: 20px;
+    }
+    .map-region-body {
+      padding: 8px 16px 14px;
+      border-top: 1px dashed #d8c9a8;
+    }
+    .map-section-label {
+      font-weight: bold;
+      color: #6b5636;
+      margin: 10px 0 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    /* 巢狀第二層:據點 details */
+    .map-terr {
+      border: 1px solid #d8c9a8;
+      border-radius: 4px;
+      margin: 6px 0;
+      background: #fffcf3;
+    }
+    .map-terr > summary {
+      padding: 7px 10px;
+      cursor: pointer;
+      list-style: none;
+      color: #5a4428;
+      font-size: 0.95em;
+    }
+    .map-terr > summary::-webkit-details-marker { display: none; }
+    .map-terr > summary::before {
+      content: "▸";
+      display: inline-block;
+      margin-right: 6px;
+      color: #a68d60;
+      font-size: 0.85em;
+      transition: transform 0.15s;
+    }
+    .map-terr[open] > summary::before { transform: rotate(90deg); }
+    .map-terr-meta { color: #a08b63; font-size: 0.85em; margin-left: 4px; }
+    .map-terr-body { padding: 4px 10px 8px; border-top: 1px dotted #e0d4b8; }
+    .map-item-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 10px;
+      border-bottom: 1px dotted #e0d4b8;
+    }
+    .map-item-row:last-child { border-bottom: none; }
+    .map-item-main { flex: 1; }
+    .map-item-main .name { font-weight: 500; }
+    .map-item-main .meta { color: #a08b63; font-size: 0.85em; margin-left: 8px; }
+    .btn-tiny {
+      font-size: 0.8em;
+      padding: 2px 10px;
+      border: 1px solid #b19770;
+      background: #fdfaf0;
+      border-radius: 3px;
+      cursor: pointer;
+      color: #6b5636;
+    }
+    .btn-tiny:hover { background: #f0e4c8; }
+    .btn-add-inline {
+      font-size: 0.85em;
+      padding: 2px 10px;
+      border: 1px dashed #a68d60;
+      background: transparent;
+      border-radius: 3px;
+      cursor: pointer;
+      color: #6b5636;
+    }
+    .btn-add-inline:hover { background: #f5ead0; }
+    .map-empty { color: #a89670; font-style: italic; padding: 4px 10px; font-size: 0.9em; }
+    /* Modal */
+    .map-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+    .map-modal.hidden { display: none; }
+    .map-modal-box {
+      background: #fdf8ee;
+      border: 1px solid #a68d60;
+      border-radius: 8px;
+      padding: 20px;
+      max-width: 480px;
+      width: 90%;
+      max-height: 85vh;
+      overflow-y: auto;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    }
+    .map-modal-box h3 {
+      margin: 0 0 14px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #d8c9a8;
+      color: #5a4428;
+    }
+    .map-modal-box label {
+      display: block;
+      margin-bottom: 10px;
+      color: #5a4428;
+    }
+    .map-modal-box label input,
+    .map-modal-box label select,
+    .map-modal-box label textarea {
+      width: 100%;
+      box-sizing: border-box;
+      margin-top: 4px;
+      padding: 6px 8px;
+      border: 1px solid #c0a978;
+      border-radius: 3px;
+      background: #fff;
+      font-family: inherit;
+    }
+    .map-modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 16px;
+    }
+  </style>
 </head>
 <body>
   <div class="app">
@@ -12,19 +166,31 @@
       <h1>世界地圖系統</h1>
       <button onclick="window.location='index.html'" class="back-btn">← 返回家族遊戲</button>
     </header>
+
     <section class="panel">
-      <h2>地名 / 區域列表</h2>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <h2 style="margin:0;">地名／區域一覽</h2>
+        <button id="addRegionBtn" class="primary-btn">＋ 新增區域</button>
+      </div>
+      <p class="hint" style="color:#8a7656; font-size:0.9em; margin:0 0 12px;">
+        點開一個區域,可在其中新增或編輯該區的據點／領地與家族。刪除功能未開放(避免誤刪影響家族成員)。
+      </p>
       <div id="regionList"></div>
-      <button id="addRegionBtn" class="primary-btn">新增地名 / 區域</button>
-    </section>
-    <section id="editorPanel" class="panel" style="display:none;">
-      <h2 id="editorTitle">編輯地區</h2>
-      <label>名稱 <input id="regionName" /></label>
-      <label>描述 <textarea id="regionDesc"></textarea></label>
-      <button id="saveRegionBtn" class="primary-btn">儲存</button>
-      <button id="cancelEditBtn" class="secondary-btn">取消</button>
     </section>
   </div>
+
+  <!-- 共用編輯 Modal -->
+  <div id="mapModal" class="map-modal hidden">
+    <div class="map-modal-box">
+      <h3 id="modalTitle">編輯</h3>
+      <div id="modalBody"></div>
+      <div class="map-modal-actions">
+        <button type="button" class="secondary-btn" id="modalCancelBtn">取消</button>
+        <button type="button" class="primary-btn" id="modalSaveBtn">儲存</button>
+      </div>
+    </div>
+  </div>
+
   <script src="js/constants.js"></script>
   <script src="js/state.js"></script>
   <script src="js/utils.js"></script>
